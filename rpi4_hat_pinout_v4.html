@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Isabella — pinout 40-pin</title>
+  <style>
+    :root {
+      --font-sans: system-ui, "Segoe UI", Roboto, Ubuntu, "Noto Sans", sans-serif;
+      --color-text-primary: #0d0d0d;
+      --color-text-secondary: #525252;
+      --color-background-primary: #f5f5f5;
+      --color-background-secondary: #ebebeb;
+      --color-background-tertiary: #d9d9d9;
+      --color-border-primary: #1a1a1a;
+      --color-border-secondary: #737373;
+      --color-border-tertiary: #a3a3a3;
+      --border-radius-lg: 10px;
+      --focus-ring: 0 0 0 2px var(--color-background-primary), 0 0 0 4px #404040;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-text-primary: #f0f0f0;
+        --color-text-secondary: #a3a3a3;
+        --color-background-primary: #141414;
+        --color-background-secondary: #1f1f1f;
+        --color-background-tertiary: #2a2a2a;
+        --color-border-primary: #e5e5e5;
+        --color-border-secondary: #737373;
+        --color-border-tertiary: #404040;
+        --focus-ring: 0 0 0 2px #141414, 0 0 0 4px #a3a3a3;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 1rem clamp(12px, 4vw, 24px) 2rem;
+      font-family: var(--font-sans);
+      color: var(--color-text-primary);
+      background: var(--color-background-primary);
+      line-height: 1.5;
+    }
+
+    .w {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 12px 0;
+    }
+
+    .page-header {
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: clamp(1.1rem, 3vw, 1.3rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .info-panel {
+      margin-bottom: 1rem;
+      padding: 10px 14px;
+      border-radius: var(--border-radius-lg);
+      background: var(--color-background-secondary);
+      border: 1px solid var(--color-border-tertiary);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+      min-height: 3rem;
+    }
+
+    .info-panel strong {
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px 8px;
+      margin-bottom: 14px;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .lg {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font: inherit;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      border: 1.5px solid transparent;
+      color: var(--color-text-secondary);
+      background: var(--color-background-secondary);
+    }
+
+    .lg:hover {
+      border-color: var(--color-border-secondary);
+    }
+
+    .lg:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .lg[aria-pressed="true"] {
+      border-color: var(--color-border-primary);
+      background: var(--color-background-tertiary);
+      color: var(--color-text-primary);
+    }
+
+    .lg .d {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 4px;
+    }
+
+    /* Половина строки = один пин (как .side в v3): подсветка фильтра только здесь */
+    .half {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 4px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.12s, opacity 0.12s, outline 0.12s;
+      font: inherit;
+      color: inherit;
+      border: none;
+      background: transparent;
+      text-align: inherit;
+    }
+
+    .half:hover {
+      background: var(--color-background-secondary);
+    }
+
+    .half:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .half.hl {
+      background: var(--color-background-secondary);
+      outline: 1.5px solid var(--color-border-primary);
+    }
+
+    .half.dim {
+      opacity: 0.2;
+    }
+
+    .half-left {
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+
+    .half-right {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .left-badges,
+    .right-badges {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .left-badges {
+      justify-content: flex-end;
+      flex: 1;
+    }
+
+    .right-badges {
+      justify-content: flex-start;
+      flex: 1;
+    }
+
+    .circ {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 500;
+      color: #fff;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .b {
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 9.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      line-height: 1.5;
+    }
+
+    .b-gpio {
+      background: var(--color-background-tertiary);
+      color: var(--color-text-secondary);
+    }
+
+    .b-fn,
+    .b-dev,
+    .b-bus {
+      color: #fff;
+    }
+
+    .b-dev { opacity: 0.9; }
+    .b-bus { opacity: 0.75; font-size: 8.5px; }
+  </style>
+</head>
+<body>
+  <div class="w">
+    <header class="page-header">
+      <h1>Isabella — pinout 40-pin</h1>
+    </header>
+
+    <aside class="info-panel" id="info" role="status" aria-live="polite">
+      Нажмите на пин для подробностей
+    </aside>
+
+    <section class="legend-section">
+      <div class="legend" id="leg" role="toolbar" aria-label="Фильтр по типу сигнала"></div>
+    </section>
+
+    <section class="pinout-section" aria-label="Схема контактов">
+      <div class="grid" id="grid" role="group" aria-label="Контакты 40-pin, пара в ряд"></div>
+    </section>
+  </div>
+
+  <script>
+    const C = {
+      pwr5v: { n: '5V', c: '#D85A30' },
+      pwr33: { n: '3.3V', c: '#E8963C' },
+      gnd: { n: 'GND', c: '#333' },
+      i2c: { n: 'I2C', c: '#5B8AC2' },
+      crsf: { n: 'CRSF', c: '#D4537E' },
+      gps: { n: 'GPS', c: '#1D9E75' },
+      rx5808: { n: 'RX5808', c: '#7F77DD' },
+      servo: { n: 'Servo', c: '#639922' },
+      fan: { n: 'Fan', c: '#5B8C8C' },
+      pwrkey: { n: 'Ключи', c: '#BA7517' },
+      free: { n: 'Свободный', c: '#999' },
+      rsv: { n: 'Зарезерв.', c: '#4A6FA5' }
+    };
+
+    const P = [
+      { n: 1, g: '3.3V', d: 'pwr33', fn: '', dev: '', bus: '', note: 'Питание 3.3В для логики' },
+      { n: 2, g: '5V', d: 'pwr5v', fn: '', dev: '', bus: '', note: 'Питание 5В — основное' },
+      { n: 3, g: 'GPIO 2', d: 'i2c', fn: 'SDA', dev: 'I2C', bus: 'I2C1', note: 'I2C1 SDA — ADC + GPS + Matek INA-BM' },
+      { n: 4, g: '5V', d: 'pwr5v', fn: '', dev: '', bus: '', note: 'Питание 5В — основное' },
+      { n: 5, g: 'GPIO 3', d: 'i2c', fn: 'SCL', dev: 'I2C', bus: 'I2C1', note: 'I2C1 SCL — ADC + GPS + Matek INA-BM' },
+      { n: 6, g: 'GND', d: 'gnd', fn: '', dev: '', bus: '', note: 'Общая земля' },
+      { n: 7, g: 'GPIO 4', d: 'gps', fn: 'TX', dev: 'GPS', bus: 'UART3', note: 'UART3 TX → GPS RX' },
+      { n: 8, g: 'GPIO 14', d: 'crsf', fn: 'TXD', dev: 'CRSF', bus: 'UART0', note: 'UART0 TX → CRSF RX' },
+      { n: 9, g: 'GND', d: 'gnd', fn: '', dev: '', bus: '', note: 'Общая земля' },
+      { n: 10, g: 'GPIO 15', d: 'crsf', fn: 'RXD', dev: 'CRSF', bus: 'UART0', note: 'UART0 RX ← CRSF TX' },
+      { n: 11, g: 'GPIO 17', d: 'crsf', fn: 'GPIO', dev: 'CRSF', bus: '', note: 'Доп. GPIO для CRSF (bind/LED)' },
+      { n: 12, g: 'GPIO 18', d: 'fan', fn: 'PWM0', dev: 'Fan', bus: '', note: 'PWM0 — управление вентилятором' },
+      { n: 13, g: 'GPIO 27', d: 'crsf', fn: 'GPIO', dev: 'CRSF', bus: '', note: 'Доп. GPIO для CRSF (bind/LED)' },
+      { n: 14, g: 'GND', d: 'gnd', fn: '', dev: '', bus: '', note: 'Общая земля' },
+      { n: 15, g: 'GPIO 22', d: 'pwrkey', fn: '5V SW', dev: 'Ключ', bus: '', note: 'Управление ключом питания 5В' },
+      { n: 16, g: 'GPIO 23', d: 'pwrkey', fn: '12V SW', dev: 'Ключ', bus: '', note: 'Управление ключом питания 12В' },
+      { n: 17, g: '3.3V', d: 'pwr33', fn: '', dev: '', bus: '', note: 'Питание 3.3В для логики' },
+      { n: 18, g: 'GPIO 24', d: 'rx5808', fn: 'MUX_A', dev: 'RX5808', bus: '', note: 'Бит A мультиплексора (1 из 4 RX)' },
+      { n: 19, g: 'GPIO 10', d: 'rx5808', fn: 'DATA', dev: 'RX5808', bus: '', note: 'Данные (MOSI) для RX5808' },
+      { n: 20, g: 'GND', d: 'gnd', fn: '', dev: '', bus: '', note: 'Общая земля' },
+      { n: 21, g: 'GPIO 9', d: 'rx5808', fn: 'MUX_B', dev: 'RX5808', bus: '', note: 'Бит B мультиплексора (1 из 4 RX)' },
+      { n: 22, g: 'GPIO 25', d: 'rx5808', fn: 'SIG', dev: 'RX5808', bus: '', note: 'Сигнал/RSSI от выбранного RX' },
+      { n: 23, g: 'GPIO 11', d: 'rx5808', fn: 'CLK', dev: 'RX5808', bus: '', note: 'Тактовая линия для RX5808' },
+      { n: 24, g: 'GPIO 8', d: 'free', fn: 'CE0', dev: '', bus: '', note: 'Свободен — SPI0 CE0' },
+      { n: 25, g: 'GND', d: 'gnd', fn: '', dev: '', bus: '', note: 'Общая земля' },
+      { n: 26, g: 'GPIO 7', d: 'free', fn: 'CE1', dev: '', bus: '', note: 'Свободен — SPI0 CE1' },
+      { n: 27, g: 'GPIO 0', d: 'rsv', fn: 'ID_SD', dev: 'EEPROM', bus: 'I2C0', note: 'Зарезерв. для HAT EEPROM' },
+      { n: 28, g: 'GPIO 1', d: 'rsv', fn: 'ID_SC', dev: 'EEPROM', bus: 'I2C0', note: 'Зарезерв. для HAT EEPROM' },
+      { n: 29, g: 'GPIO 5', d: 'gps', fn: 'RX', dev: 'GPS', bus: 'UART3', note: 'UART3 RX ← GPS TX' },
+      { n: 30, g: 'GND', d: 'gnd', fn: '', dev: '', bus: '', note: 'Общая земля' },
+      { n: 31, g: 'GPIO 6', d: 'free', fn: '', dev: '', bus: '', note: 'Свободен' },
+      { n: 32, g: 'GPIO 12', d: 'servo', fn: 'TX', dev: 'Servo', bus: 'UART5', note: 'UART5 TX → ServoDriver RX' },
+      { n: 33, g: 'GPIO 13', d: 'servo', fn: 'RX', dev: 'Servo', bus: 'UART5', note: 'UART5 RX ← ServoDriver TX' },
+      { n: 34, g: 'GND', d: 'gnd', fn: '', dev: '', bus: '', note: 'Общая земля' },
+      { n: 35, g: 'GPIO 19', d: 'free', fn: 'MISO', dev: '', bus: '', note: 'Свободен — SPI1 MISO' },
+      { n: 36, g: 'GPIO 16', d: 'free', fn: '', dev: '', bus: '', note: 'Свободен' },
+      { n: 37, g: 'GPIO 26', d: 'free', fn: '', dev: '', bus: '', note: 'Свободен' },
+      { n: 38, g: 'GPIO 20', d: 'free', fn: 'MOSI', dev: '', bus: '', note: 'Свободен — SPI1 MOSI' },
+      { n: 39, g: 'GND', d: 'gnd', fn: '', dev: '', bus: '', note: 'Общая земля' },
+      { n: 40, g: 'GPIO 21', d: 'free', fn: 'SCLK', dev: '', bus: '', note: 'Свободен — SPI1 SCLK' }
+    ];
+
+    /** Текст в панели подробностей при активном фильтре легенды */
+    const FILTER_INFO = {
+      i2c: ['I2C1 (GPIO 2, 3) — общая шина для ADC + GPS + Matek INA-BM'],
+      gps: ['UART3 (GPIO 4, 5) — GPS'],
+      servo: ['UART5 (GPIO 12, 13) — ServoDriver'],
+      fan: ['GPIO 18 — вентилятор (аппаратный PWM0)'],
+      crsf: [
+        'UART0 (GPIO 14, 15) — CRSF',
+        '2 GPIO (17, 27) — CRSF (OneWireCRSF pins)'
+      ],
+      rx5808: ['5 GPIO (10, 11, 24, 9, 25) — RX5808 (DATA, CLK, MUX_A, MUX_B, SIGNAL)'],
+      pwrkey: ['2 GPIO (22, 23) — ключи питания (5V, 12V)']
+    };
+
+    let filt = null;
+    const leg = document.getElementById('leg');
+    const grid = document.getElementById('grid');
+    const info = document.getElementById('info');
+
+    function showFilterInfo() {
+      if (!filt) {
+        info.textContent = 'Нажмите на пин для подробностей';
+        return;
+      }
+      const lines = FILTER_INFO[filt];
+      if (!lines) {
+        info.textContent = 'Нажмите на пин для подробностей';
+        return;
+      }
+      const frag = document.createDocumentFragment();
+      lines.forEach((line, i) => {
+        if (i > 0) frag.appendChild(document.createElement('br'));
+        frag.appendChild(document.createTextNode(line));
+      });
+      info.replaceChildren(frag);
+    }
+
+    Object.entries(C).forEach(([k, v]) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lg';
+      btn.setAttribute('aria-pressed', 'false');
+      const dot = document.createElement('span');
+      dot.className = 'd';
+      dot.style.background = v.c;
+      dot.setAttribute('aria-hidden', 'true');
+      btn.appendChild(dot);
+      btn.appendChild(document.createTextNode(v.n));
+      btn.addEventListener('click', () => {
+        const on = filt === k;
+        leg.querySelectorAll('.lg').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+        if (on) {
+          filt = null;
+        } else {
+          filt = k;
+          btn.setAttribute('aria-pressed', 'true');
+        }
+        upHL();
+        showFilterInfo();
+      });
+      leg.appendChild(btn);
+    });
+
+    function upHL() {
+      document.querySelectorAll('.half[data-d]').forEach((el) => {
+        el.classList.remove('hl', 'dim');
+        if (!filt) return;
+        if (el.dataset.d === filt) el.classList.add('hl');
+        else el.classList.add('dim');
+      });
+    }
+
+    function mkLeft(p) {
+      const col = C[p.d].c;
+      const parts = [];
+      if (p.bus) parts.push(`<span class="b b-bus" style="background:${col}">${p.bus}</span>`);
+      if (p.dev) parts.push(`<span class="b b-dev" style="background:${col}">${p.dev}</span>`);
+      if (p.fn) parts.push(`<span class="b b-fn" style="background:${col}">${p.fn}</span>`);
+      parts.push(`<span class="b b-gpio">${p.g}</span>`);
+      return parts.join('');
+    }
+
+    function mkRight(p) {
+      const col = C[p.d].c;
+      const parts = [];
+      parts.push(`<span class="b b-gpio">${p.g}</span>`);
+      if (p.fn) parts.push(`<span class="b b-fn" style="background:${col}">${p.fn}</span>`);
+      if (p.dev) parts.push(`<span class="b b-dev" style="background:${col}">${p.dev}</span>`);
+      if (p.bus) parts.push(`<span class="b b-bus" style="background:${col}">${p.bus}</span>`);
+      return parts.join('');
+    }
+
+    function showPin(i) {
+      const p = P[i];
+      const d = C[p.d];
+      const frag = document.createDocumentFragment();
+      const strong = document.createElement('strong');
+      strong.style.color = d.c;
+      strong.textContent = `Pin ${p.n}`;
+      frag.appendChild(strong);
+      frag.appendChild(document.createTextNode(` · ${p.g}`));
+      if (p.fn) frag.appendChild(document.createTextNode(` · ${p.fn}`));
+      if (p.dev) {
+        frag.appendChild(document.createTextNode(' · '));
+        const devSpan = document.createElement('span');
+        devSpan.style.color = d.c;
+        devSpan.textContent = p.dev;
+        frag.appendChild(devSpan);
+      }
+      if (p.bus) frag.appendChild(document.createTextNode(` · ${p.bus}`));
+      frag.appendChild(document.createElement('br'));
+      frag.appendChild(document.createTextNode(p.note));
+      info.replaceChildren(frag);
+    }
+
+    for (let r = 0; r < 20; r++) {
+      const L = P[r * 2];
+      const R = P[r * 2 + 1];
+      const row = document.createElement('div');
+      row.className = 'row';
+
+      const leftBtn = document.createElement('button');
+      leftBtn.type = 'button';
+      leftBtn.className = 'half half-left';
+      leftBtn.dataset.d = L.d;
+      leftBtn.setAttribute('aria-label', `Пин ${L.n}, ${L.g}`);
+      leftBtn.innerHTML = `<div class="left-badges">${mkLeft(L)}</div><span class="circ" style="background:${C[L.d].c}">${L.n}</span>`;
+      leftBtn.addEventListener('click', () => showPin(r * 2));
+
+      const rightBtn = document.createElement('button');
+      rightBtn.type = 'button';
+      rightBtn.className = 'half half-right';
+      rightBtn.dataset.d = R.d;
+      rightBtn.setAttribute('aria-label', `Пин ${R.n}, ${R.g}`);
+      rightBtn.innerHTML = `<span class="circ" style="background:${C[R.d].c}">${R.n}</span><div class="right-badges">${mkRight(R)}</div>`;
+      rightBtn.addEventListener('click', () => showPin(r * 2 + 1));
+
+      row.append(leftBtn, rightBtn);
+      grid.appendChild(row);
+    }
+  </script>
+</body>
+</html>
