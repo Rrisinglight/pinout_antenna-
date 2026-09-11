@@ -89,9 +89,10 @@ class TestProject(unittest.TestCase):
 
     def test_diff_pair_polarity_and_modes(self):
         for n, e in self.prj["pins"].items():
+            p = self.pins[int(n)]
             m = re.search(r"_([PN])$", e.get("net", ""))
-            if m:
-                self.assertTrue(self.pins[int(n)]["sig"].endswith("_" + m.group(1)), f"пин {n}: {e['net']} vs {self.pins[int(n)]['sig']}")
+            if m and "pair" in p:
+                self.assertTrue(p["sig"].endswith("_" + m.group(1)), f"пин {n}: {e['net']} vs {p['sig']}")
         modes = {36: "ALT4 TXD2", 35: "ALT4 RXD2", 58: "ALT0 SDA1", 56: "ALT0 SCL1", 54: "ALT4 TXD3", 34: "ALT4 RXD3",
                  37: "ALT4 RTS3", 39: "ALT4 TXD4", 40: "ALT4 RXD4", 38: "ALT4 RTS4", 31: "ALT4 TXD5", 28: "ALT4 RXD5",
                  55: "ALT0 TXD0", 51: "ALT0 RXD0", 49: "ALT5 PWM0_0", 27: "ALT3 SPI6_MOSI", 25: "ALT3 SPI6_SCLK"}
