@@ -145,6 +145,7 @@ class TestPage(unittest.TestCase):
             text = self.page.evaluate("LIB.csv(DATA.pins, PROJECT)")
         self.assertEqual(len(text.split("\n")), 201)
         self.assertTrue(text.startswith("pin;conn;row;signal"))
+        self.assertTrue(text.split("\n")[0].endswith(";ds"))
 
     def test_facts(self):
         n = self.page.evaluate("PROJECT.facts.length")

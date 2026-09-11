@@ -80,10 +80,10 @@ test('colorOf и chipKey по слоям', () => {
 test('csv: заголовок, 200 строк, экранирование', () => {
   const lines = LIB.csv(DATA.pins, PROJECT).split('\n');
   assert.equal(lines.length, 201);
-  assert.equal(lines[0], 'pin;conn;row;signal;group;dir;net;device;mode;status;pair;note');
+  assert.equal(lines[0], 'pin;conn;row;signal;group;dir;net;device;mode;status;pair;note;ds');
   assert.match(lines[55], /^55;J1;odd;GPIO14;GPIO;bidir;UART0_TXD;CONSOLE;ALT0 TXD0;used;;Сервисная консоль/);
   assert.match(lines[116], /^116;J2;even;PCIe_RX_P;PCIE;in;PCIE_RX_P;PCIE;;used;118;/);
-  assert.equal(LIB.csv([{ n: 1, conn: 'J1', row: 'odd', sig: 'X', grp: 'ZZZ', dir: 'in' }], PROJECT).split('\n')[1], '1;J1;odd;X;ZZZ;in;;NC;;free;;');
+  assert.equal(LIB.csv([{ n: 1, conn: 'J1', row: 'odd', sig: 'X', grp: 'ZZZ', dir: 'in' }], PROJECT).split('\n')[1], '1;J1;odd;X;ZZZ;in;;NC;;free;;;');
   const esc = LIB.csv([{ n: 1, conn: 'J1', row: 'odd', sig: 'a;b', grp: 'ZZZ', dir: 'in' }], PROJECT).split('\n')[1];
   assert.equal(esc.split(';')[3], '"a');   // значение с ; взято в кавычки
 });
