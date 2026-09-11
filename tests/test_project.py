@@ -1,0 +1,88 @@
+import json, re, unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+STATUSES = {"used", "opt", "free", "nc", "dnc"}
+
+
+class TestProject(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.ds = json.loads((ROOT / "data" / "cm4_datasheet.json").read_text(encoding="utf-8"))
+        cls.prj = json.loads((ROOT / "data" / "project.json").read_text(encoding="utf-8"))
+        cls.pins = {p["n"]: p for p in cls.ds["pins"]}
+
+    def entry(self, n):
+        p = self.pins[n]
+        e = self.prj["pins"].get(str(n)) or self.prj["defaults"].get(p["grp"]) or {}
+        return {"net": e.get("net", ""), "dev": e.get("dev", "NC"), "mode": e.get("mode", ""),
+                "status": e.get("status", "used" if str(n) in self.prj["pins"] else "free"), "note": e.get("note", "")}
+
+    def test_shape(self):
+        for key in ("meta", "devices", "defaults", "pins", "ds_notes", "facts"):
+            self.assertIn(key, self.prj)
+        for k, d in self.prj["devices"].items():
+            self.assertTrue(d["name"] and re.fullmatch(r"#[0-9A-Fa-f]{6}", d["c"]), k)
+        self.assertIn("NC", self.prj["devices"])
+        self.assertTrue(all(isinstance(f, str) and f for f in self.prj["facts"]))
+        self.assertGreaterEqual(len(self.prj["facts"]), 12)
+
+    def test_pins_reference_existing(self):
+        for k, e in self.prj["pins"].items():
+            self.assertIn(int(k), self.pins, k)
+            self.assertIn(e["dev"], self.prj["devices"], k)
+            self.assertIn(e.get("status", "used"), STATUSES, k)
+            self.assertTrue(e.get("note"), f"пин {k} без примечания")
+        for grp, e in self.prj["defaults"].items():
+            self.assertIn(e["dev"], self.prj["devices"], grp)
+            self.assertIn(e["status"], STATUSES, grp)
+        for grp in self.prj["ds_notes"]:
+            self.assertTrue(any(p["grp"] == grp for p in self.ds["pins"]), grp)
+
+    def test_every_pin_resolves(self):
+        for n in range(1, 201):
+            e = self.entry(n)
+            self.assertNotEqual(e["status"], "free", f"пин {n} ({self.pins[n]['sig']}) не описан")
+
+    def test_gpio_used_once_and_modes_match_alt(self):
+        seen = {}
+        for n, p in self.pins.items():
+            if p["grp"] != "GPIO":
+                continue
+            e = self.prj["pins"].get(str(n))
+            self.assertIsNotNone(e, f"GPIO{p['gpio']} (пин {n}) не назначен")
+            self.assertNotIn(p["gpio"], seen)
+            seen[p["gpio"]] = n
+            m = re.fullmatch(r"ALT(\d) (.+)", e["mode"])
+            if m:
+                self.assertEqual(self.ds["alt"][str(p["gpio"])]["alt"][int(m.group(1))], m.group(2), f"пин {n}")
+            else:
+                self.assertEqual(e["mode"], "GPIO", f"пин {n}")
+        self.assertEqual(sorted(seen), list(range(28)))
+
+    def test_nets_unique_outside_power(self):
+        nets = {}
+        for n in range(1, 201):
+            e = self.entry(n)
+            if not e["net"] or self.pins[n]["grp"] in ("GND", "PWR5", "PWR33"):
+                continue
+            self.assertNotIn(e["net"], nets, f"цепь {e['net']}: пины {nets.get(e['net'])} и {n}")
+            nets[e["net"]] = n
+
+    def test_approved_allocation(self):
+        expect = {36: "UART2_TXD", 35: "UART2_RXD", 58: "I2C1_SDA", 56: "I2C1_SCL", 54: "UART3_TXD", 34: "UART3_RXD",
+                  30: "CVBS_SEL0", 37: "CRSF1_DIR", 39: "UART4_TXD", 40: "UART4_RXD", 44: "CVBS_SEL1", 38: "CRSF2_DIR",
+                  31: "UART5_TXD", 28: "UART5_RXD", 55: "UART0_TXD", 51: "UART0_RXD", 29: "CRSF2_INV", 50: "TX1_PWR_EN",
+                  49: "FAN_PWM", 26: "TX2_PWR_EN", 27: "VRX_DATA", 25: "VRX_CLK", 46: "VRX_LE1", 47: "VRX_LE2",
+                  45: "VRX_LE3", 41: "VRX_LE4", 24: "FAN_TACH", 48: "CRSF1_INV",
+                  99: "GLOBAL_EN", 92: "RUN_PG", 93: "nRPIBOOT", 78: "CM4_3V3", 102: "PCIE_CLKREQ_N", 116: "PCIE_RX_P"}
+        for n, net in expect.items():
+            self.assertEqual(self.entry(n)["net"], net, f"пин {n}")
+        self.assertEqual(self.entry(76)["status"], "dnc")
+        self.assertEqual(self.entry(1)["net"], "GND")
+        self.assertEqual(self.entry(146)["status"], "nc")
+        self.assertEqual(self.entry(115)["status"], "opt")
+
+
+if __name__ == "__main__":
+    unittest.main()
