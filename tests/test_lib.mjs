@@ -1,5 +1,5 @@
 import { test } from 'node:test';
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
@@ -18,13 +18,13 @@ test('данные вшиты', () => {
 });
 
 test('padXY: пин 1/2 справа, 99/100 слева, нечётный ряд верхний', () => {
-  assert.deepEqual(LIB.padXY(1), { x: 942, y: 52 });
-  assert.deepEqual(LIB.padXY(2), { x: 942, y: 72 });
-  assert.deepEqual(LIB.padXY(99), { x: 60, y: 52 });
-  assert.deepEqual(LIB.padXY(100), { x: 60, y: 72 });
-  assert.deepEqual(LIB.padXY(101), { x: 942, y: 340 });
-  assert.deepEqual(LIB.padXY(200), { x: 60, y: 360 });
-  assert.deepEqual(LIB.padXY(3), { x: 924, y: 52 });
+  assert.deepEqual({ ...LIB.padXY(1) }, { x: 942, y: 52 });
+  assert.deepEqual({ ...LIB.padXY(2) }, { x: 942, y: 72 });
+  assert.deepEqual({ ...LIB.padXY(99) }, { x: 60, y: 52 });
+  assert.deepEqual({ ...LIB.padXY(100) }, { x: 60, y: 72 });
+  assert.deepEqual({ ...LIB.padXY(101) }, { x: 942, y: 340 });
+  assert.deepEqual({ ...LIB.padXY(200) }, { x: 60, y: 360 });
+  assert.deepEqual({ ...LIB.padXY(3) }, { x: 924, y: 52 });
 });
 
 test('merge: явная запись, default по группе, свободный', () => {
