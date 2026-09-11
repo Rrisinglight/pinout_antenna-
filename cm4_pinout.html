@@ -226,6 +226,51 @@ var LIB = (function () {
     return LIB.matches(p, o, p.gpio != null ? ALT[String(p.gpio)] : undefined, state.q);
   }
 
+  /* ---------- таблица ---------- */
+  function buildTable() {
+    var thead = $('#tbl thead'), tbody = $('#tbl tbody'), tr = h('tr');
+    [['№', ''], ['Разъём', ''], ['Сигнал', ''], ['Группа', ''], ['Напр.', ''],
+     ['Цепь', 'prj'], ['Устройство', 'prj'], ['Режим', 'prj'], ['Статус', 'prj'], ['Примечание', 'prj'],
+     ['Пара', ''], ['Даташит', '']].forEach(function (c) { tr.appendChild(h('th', c[1] || null, c[0])); });
+    thead.appendChild(tr);
+    pins.forEach(function (p) {
+      var o = ov(p), r = h('tr', 'row'); r.dataset.n = p.n;
+      var num = h('td', 'mono'); num.appendChild(h('span', 'sw')); num.appendChild(document.createTextNode(String(p.n))); r.appendChild(num);
+      r.appendChild(h('td', null, p.conn));
+      r.appendChild(h('td', 'mono', p.sig));
+      r.appendChild(h('td', null, LIB.GROUPS[p.grp] ? LIB.GROUPS[p.grp].n : p.grp));
+      r.appendChild(h('td', null, LIB.DIRS[p.dir] || p.dir));
+      r.appendChild(h('td', 'mono prj c-net', o.net));
+      r.appendChild(h('td', 'prj c-dev', o.devName || o.dev));
+      r.appendChild(h('td', 'mono prj c-mode', o.mode));
+      r.appendChild(h('td', 'prj c-status', LIB.STATUS[o.status] || o.status));
+      r.appendChild(h('td', 'txt prj c-note', o.note));
+      r.appendChild(h('td', 'mono', p.pair ? p.pair.partner + ' · ' + p.pair.z + ' Ω' : ''));
+      r.appendChild(h('td', 'txt', p.ds));
+      r.addEventListener('click', function () { select(p.n); });
+      tbody.appendChild(r);
+      rows[p.n] = r;
+    });
+  }
+
+  /* ---------- CSV ---------- */
+  function bindCsv() {
+    var btn = $('#csv'), dlg = $('#csvdlg');
+    btn.addEventListener('click', function () {
+      var text = LIB.csv(pins, PROJECT);
+      function ok() { btn.textContent = 'Скопировано ✓'; setTimeout(function () { btn.textContent = 'Скопировать CSV'; }, 1500); }
+      function fallback() { dlg.querySelector('textarea').value = text; dlg.showModal(); dlg.querySelector('textarea').select(); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback);
+      else fallback();
+    });
+  }
+
+  /* ---------- факты ---------- */
+  function buildFacts() {
+    var ul = $('#facts');
+    PROJECT.facts.forEach(function (f) { ul.appendChild(h('li', null, f)); });
+  }
+
   /* ---------- схема ---------- */
   function buildBoard() {
     board.appendChild(svg('rect', {class: 'outline', x: 20, y: 20, width: 960, height: 400, rx: 12}));
@@ -410,10 +455,13 @@ var LIB = (function () {
   });
 
   window.PINOUT = {select: select, setLayer: setLayer, setFilter: setFilter, setQuery: setQuery, state: state,
-                   registerRow: function (n, tr) { rows[n] = tr; }, apply: apply, ov: ov, byN: byN};
+                   apply: apply, ov: ov, byN: byN};
   $('#sub').textContent = (PROJECT.meta.cm4 || '') + (PROJECT.meta.date ? ' · ред. ' + PROJECT.meta.rev + ' от ' + PROJECT.meta.date : '');
   buildBoard();
   buildLegend();
+  buildTable();
+  buildFacts();
+  bindCsv();
   apply();
 })();
 /*UI-END*/

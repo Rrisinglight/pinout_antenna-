@@ -123,6 +123,34 @@ class TestPage(unittest.TestCase):
         self.assertIsNone(page.evaluate("PINOUT.state.sel"))
         page.close()
 
+    def test_table_rows_and_click(self):
+        self.assertEqual(self.page.locator("#tbl tbody tr.row").count(), 200)
+        self.assertEqual(self.page.locator("#tbl thead th").count(), 12)
+        self.assertFalse(self.page.locator('#tbl tbody tr.row[data-n="55"] .c-net').is_visible())
+        self.page.click('.seg button[data-layer="prj"]')
+        self.assertEqual(self.page.locator('#tbl tbody tr.row[data-n="55"] .c-net').inner_text(), "UART0_TXD")
+        self.page.click('#tbl tbody tr.row[data-n="92"]')
+        self.assertIn("RUN_PG", self.page.locator("#panel h2").inner_text())
+        self.assertTrue(self.page.evaluate("document.querySelector('#tbl tbody tr.row[data-n=\"92\"]').classList.contains('sel')"))
+        self.page.fill("#q", "pcie")
+        self.assertEqual(self.page.evaluate("[...document.querySelectorAll('#tbl tbody tr.row')].filter(r => !r.hidden).length"), 8)
+        self.assertEqual(self.page.locator("#cnt").inner_text(), "Показано 8 из 200")
+
+    def test_csv_button(self):
+        self.page.click("#csv")
+        self.page.wait_for_function("document.querySelector('#csv').textContent.includes('Скопировано') || document.querySelector('#csvdlg').open")
+        if self.page.evaluate("document.querySelector('#csvdlg').open"):
+            text = self.page.locator("#csvdlg textarea").input_value()
+        else:
+            text = self.page.evaluate("LIB.csv(DATA.pins, PROJECT)")
+        self.assertEqual(len(text.split("\n")), 201)
+        self.assertTrue(text.startswith("pin;conn;row;signal"))
+
+    def test_facts(self):
+        n = self.page.evaluate("PROJECT.facts.length")
+        self.assertEqual(self.page.locator("#facts li").count(), n)
+        self.assertGreaterEqual(n, 12)
+
 
 if __name__ == "__main__":
     unittest.main()
