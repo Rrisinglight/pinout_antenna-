@@ -89,7 +89,7 @@
 | 27 | 48 | GPIO | CRSF1_INV | CRSF1 | инверсия TX1 |
 
 ### 5. Слой «Проект»: остальные пины
-- PCIe 102/109/110/112/116/118/122/124 → M.2 M-key NVMe 2280 (CLKREQ#, PERST#, REFCLK, CM4 RX ← PETp0/n0, CM4 TX → PERp0/n0).
+- PCIe 102/109/110/112/116/118/122/124 → M.2 M-key NVMe 2280 (CLKREQ#, PERST#, REFCLK, CM4 TX → PETp0/n0, CM4 RX ← PERp0/n0 — имена со стороны хоста, §2.3).
 - CSI0 (128/130, 134/136, 140/142) + I2C0 SDA0/SCL0 (82/80) + Camera_GPIO (97) → FFC камеры. CSI1 (115/117, 121/123, 133/135, 139/141, 127/129) — резерв (`opt`) под analog→MIPI, тот же I2C0.
 - USB 101/103/105 → хаб USB 2.0 (2 внешних порта, LTE-модем, резерв) + прямой путь к ПК для rpiboot.
 - Ethernet пары 3–12 → свитч; LED 15/17/19 — `opt`; SYNC 16/18 — `nc`.

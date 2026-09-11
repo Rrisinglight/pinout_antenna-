@@ -82,6 +82,21 @@ class TestProject(unittest.TestCase):
         self.assertEqual(self.entry(1)["net"], "GND")
         self.assertEqual(self.entry(146)["status"], "nc")
         self.assertEqual(self.entry(115)["status"], "opt")
+        notes = {n: (self.prj["pins"][str(n)]["note"]) for n in (116, 118, 122, 124)}
+        self.assertIn("PERp0", notes[116]); self.assertIn("PERn0", notes[118])
+        self.assertIn("PETp0", notes[122]); self.assertIn("PETn0", notes[124])
+        self.assertTrue(any("CM4 PCIe_TX → PETp0" in f for f in self.prj["facts"]))
+
+    def test_diff_pair_polarity_and_modes(self):
+        for n, e in self.prj["pins"].items():
+            m = re.search(r"_([PN])$", e.get("net", ""))
+            if m:
+                self.assertTrue(self.pins[int(n)]["sig"].endswith("_" + m.group(1)), f"пин {n}: {e['net']} vs {self.pins[int(n)]['sig']}")
+        modes = {36: "ALT4 TXD2", 35: "ALT4 RXD2", 58: "ALT0 SDA1", 56: "ALT0 SCL1", 54: "ALT4 TXD3", 34: "ALT4 RXD3",
+                 37: "ALT4 RTS3", 39: "ALT4 TXD4", 40: "ALT4 RXD4", 38: "ALT4 RTS4", 31: "ALT4 TXD5", 28: "ALT4 RXD5",
+                 55: "ALT0 TXD0", 51: "ALT0 RXD0", 49: "ALT5 PWM0_0", 27: "ALT3 SPI6_MOSI", 25: "ALT3 SPI6_SCLK"}
+        for n, mode in modes.items():
+            self.assertEqual(self.prj["pins"][str(n)]["mode"], mode, f"пин {n}")
 
 
 if __name__ == "__main__":
