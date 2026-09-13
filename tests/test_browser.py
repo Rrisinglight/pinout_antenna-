@@ -162,6 +162,8 @@ class TestPage(unittest.TestCase):
         n = self.page.evaluate("ROUTING.general.length")
         self.assertEqual(self.page.locator("#general h3").count(), n)
         self.assertIn("Layout notes", self.page.locator("#general").inner_text())
+        # the 200-pin table comes first, Layout notes last (DOCUMENT_POSITION_FOLLOWING = 4)
+        self.assertTrue(self.page.evaluate("!!(document.querySelector('.tbl-sec').compareDocumentPosition(document.querySelector('#general')) & 4)"))
 
     def test_table_and_csv(self):
         self.assertEqual(self.page.locator("#tbl tbody tr.row").count(), 200)
