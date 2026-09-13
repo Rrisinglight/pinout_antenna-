@@ -49,6 +49,28 @@ class TestRationale(unittest.TestCase):
         for needle in ("I2C1", "ADS1115", "1.8 кОм"):
             self.assertIn(needle, blob, needle)
 
+    def test_alt_claims_match_datasheet(self):
+        # "GPIO7 = RTS3 (ALT4)", "GPIO18 = аппаратный PWM0_0 (ALT5)" and the grouped
+        # "(ALT5: GPIO18 = PWM0_0, GPIO19 = PWM0_1)" must all agree with DS Table 1.
+        single = re.compile(r"GPIO(\d+)\s*=\s*(?:[а-яё]+\s+)?([A-Za-z0-9_]+)\s*\(ALT(\d)\)")
+        grouped = re.compile(r"\(ALT(\d):\s*((?:GPIO\d+\s*=\s*[A-Za-z0-9_]+(?:,\s*)?)+)\)")
+        pair = re.compile(r"GPIO(\d+)\s*=\s*([A-Za-z0-9_]+)")
+        bullets = [("overview", t) for t in self.rat["overview"]]
+        for grp in ("devices", "pins"):
+            for k, items in self.rat[grp].items():
+                bullets += [(f"{grp}.{k}", t) for t in items]
+        claims = []
+        for where, t in bullets:
+            for m in single.finditer(t):
+                claims.append((where, m.group(1), m.group(2), int(m.group(3))))
+            for m in grouped.finditer(t):
+                for g, fn in pair.findall(m.group(2)):
+                    claims.append((where, g, fn, int(m.group(1))))
+        self.assertGreaterEqual(len(claims), 5, "regex no longer matches the bullet phrasing")
+        for where, gpio, fn, alt in claims:
+            self.assertIn(gpio, self.ds["alt"], f"{where}: GPIO{gpio} not in ALT table")
+            self.assertEqual(self.ds["alt"][gpio]["alt"][alt], fn, f"{where}: GPIO{gpio} ALT{alt}")
+
 
 if __name__ == "__main__":
     unittest.main()

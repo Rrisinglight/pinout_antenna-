@@ -77,6 +77,10 @@ class TestPage(unittest.TestCase):
         self.assertIn("Routing notes · pin 1", rt)
         self.assertEqual(self.page.locator("#routing li").count(), 1)
         self.assertIn("GND", rt); self.assertRegex(rt, "[А-Яа-я]")
+        self.page.click('.seg button[data-layer="prj"]')   # pin 1 stays selected across the layer switch
+        self.assertIn("Земля — обоснование не требуется", self.page.locator("#design").inner_text())
+        self.page.click('g.pad[data-n="104"]')   # Reserved → device NC
+        self.assertIn("Вывод не используется — обоснование не требуется", self.page.locator("#design").inner_text())
 
     def test_legend_filter_and_summary(self):
         self.page.click('#leg .lg[data-k="VDAC"]')
@@ -145,6 +149,14 @@ class TestPage(unittest.TestCase):
         self.assertTrue(self.page.evaluate("(e => e.scrollHeight <= e.clientHeight)(document.querySelector('.tbl-wrap'))"))
         css = self.page.evaluate("[...document.styleSheets[0].cssRules].map(r => r.cssText).join('\\n')")
         self.assertIn("scrollbar-width: thin", css)
+
+    def test_sticky_table_header(self):
+        # ≥1280 px: .tbl-wrap must not be a scroll container, so the header sticks to the viewport
+        self.page.evaluate("document.querySelector('.tbl-wrap').scrollIntoView(); window.scrollBy(0, 3000)")
+        wrap_top = self.page.evaluate("document.querySelector('.tbl-wrap').getBoundingClientRect().top")
+        self.assertLess(wrap_top, -2500)
+        top = self.page.evaluate("document.querySelector('#tbl thead th').getBoundingClientRect().top")
+        self.assertTrue(-1 <= top <= 1, f"sticky header top = {top}")
 
     def test_general_section(self):
         n = self.page.evaluate("ROUTING.general.length")
