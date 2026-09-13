@@ -119,6 +119,7 @@ class TestPage(unittest.TestCase):
         self.assertEqual(self.page.locator("#tbl tbody tr.row").count(), 200)
         heads = self.page.locator("#tbl thead th").all_inner_texts()
         self.assertEqual(heads[:5], ["#", "Conn.", "Signal", "Group", "Dir."])
+        self.assertRegex(self.page.locator('#tbl tbody tr.row[data-n="116"] td.txt').last.inner_text(), "[А-Яа-я]")
         self.page.click('.seg button[data-layer="prj"]')
         self.assertEqual(self.page.locator('#tbl tbody tr.row[data-n="55"] .c-net').inner_text(), "UART0_TXD")
         self.page.click('#tbl tbody tr.row[data-n="92"]')

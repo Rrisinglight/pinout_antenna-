@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -335,7 +335,7 @@ var LIB = (function () {
       r.appendChild(h('td', 'prj c-status', LIB.STATUS[o.status] || o.status));
       r.appendChild(h('td', 'txt prj c-note', o.note));
       r.appendChild(h('td', 'mono', p.pair ? p.pair.partner + ' · ' + p.pair.z + ' Ом' : ''));
-      r.appendChild(h('td', 'txt', p.ds));
+      r.appendChild(h('td', 'txt', DS_RU[p.ds] || p.ds));
       r.addEventListener('click', function () { select(p.n); });
       tbody.appendChild(r);
       rows[p.n] = r;
@@ -447,7 +447,7 @@ var LIB = (function () {
     if (p.pair) {
       var q = byN[p.pair.partner], span = h('span');
       span.appendChild(pinBtn(q.n));
-      span.appendChild(document.createTextNode(' ' + q.sig + ' · ' + p.pair.z + ' Ом · разбег дорожек на CM4 ' + p.pair.skew + ' / ' + q.pair.skew + ' мм'));
+      span.appendChild(document.createTextNode(' ' + q.sig + ' · ' + p.pair.z + ' Ом · разбег длин на CM4 ' + p.pair.skew + ' / ' + q.pair.skew + ' мм'));
       kv(dl2, 'Differential pair', span);
     }
     frag.appendChild(dl2);
