@@ -10,7 +10,7 @@
   ],
   "PWR33": [
    "CM4_3.3V output (pins 84, 86): 3.3 V ± 2.5 %, max 300 mA per pin, 600 mA total. It is off during power-off and while GLOBAL_EN is low. [DS Table 6]",
-   "On this board CM4_3.3V feeds GPIO_VREF only; heavy 3.3 V loads take their own regulator from +5V. [project]"
+   "On this board CM4_3.3V feeds GPIO_VREF and the status LEDs only; heavy 3.3 V loads take their own regulator from +5V. [project]"
   ],
   "PWR18": [
    "CM4_1.8V (pins 88, 90) is not used on this board: leave both pins unconnected. [project]"
@@ -85,21 +85,21 @@
  },
  "pins": {
   "15": [
-   "Ethernet activity LED (typically green): active-low sink, 8 mA at VOL < 0.4 V, CM4_3.3V — anode to 3.3 V through a series resistor for ≤ 8 mA. [DS Table 6]",
+   "Ethernet LED output, active low, sink ≤ 8 mA at VOL < 0.4 V: LED anode through a series resistor to CM4_3.3V (pins 84/86) — not to a baseboard rail that stays up while the CM4 is off (back-feed). [DS Table 6]",
    "Optional on this board. [project]"
   ],
   "16": [
    "IEEE 1588 SYNC input, not used on this board: leave unconnected. [project]"
   ],
   "17": [
-   "Ethernet speed LED (typically yellow), low = 1 Gbit or 100 Mbit link: active-low sink, 8 mA at VOL < 0.4 V, CM4_3.3V — anode to 3.3 V through a series resistor for ≤ 8 mA. [DS Table 6]",
+   "Ethernet LED output, active low, sink ≤ 8 mA at VOL < 0.4 V: LED anode through a series resistor to CM4_3.3V (pins 84/86) — not to a baseboard rail that stays up while the CM4 is off (back-feed). [DS Table 6]",
    "Optional on this board. [project]"
   ],
   "18": [
    "IEEE 1588 SYNC output, not used on this board: leave unconnected. [project]"
   ],
   "19": [
-   "Ethernet speed LED (typically yellow), low = 1 Gbit or 10 Mbit link: active-low sink, 8 mA at VOL < 0.4 V, CM4_3.3V — anode to 3.3 V through a series resistor for ≤ 8 mA. [DS Table 6]",
+   "Ethernet LED output, active low, sink ≤ 8 mA at VOL < 0.4 V: LED anode through a series resistor to CM4_3.3V (pins 84/86) — not to a baseboard rail that stays up while the CM4 is off (back-feed). [DS Table 6]",
    "Optional on this board. [project]"
   ],
   "20": [
@@ -291,7 +291,8 @@
     "The BCM2711 throttles its clock to keep the die below 85 °C; if it cannot, the case temperature rises above 85 °C. Keep the ambient for the other CM4 devices inside the operating range. [DS §3.2]",
     "The CM4 has less passive heat sinking than a Raspberry Pi 4 Model B and may run warmer despite dissipating less, so a thermal solution may be needed. [DS §3.2]",
     "BCM2711 15 × 15 mm centred at (31.99, 23.03) mm on the board drawing: centre the heatsink or fan cut-out there. [DS Fig. 4]",
-    "Fan: PWM0 on GPIO18 (pin 49), tachometer on GPIO26 (pin 24) with an external pull-up. [project]"
+    "Fan: PWM0 on GPIO18 (pin 49), tachometer on GPIO26 (pin 24) with an external pull-up. [project]",
+    "Optimal RF performance is between −20 °C and +75 °C; keep the Wi-Fi module below 75 °C where possible. [DS §3.2]"
    ]
   },
   {

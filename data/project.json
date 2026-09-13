@@ -24,7 +24,7 @@
  "defaults": {
   "GND": {"net": "GND", "dev": "GND", "status": "used", "note": "Connect every GND pin."},
   "PWR5": {"net": "+5V", "dev": "POWER", "status": "used", "note": "Main 5 V input, 4.75–5.25 V. Connect all six +5V pins."},
-  "PWR33": {"net": "CM4_3V3", "dev": "POWER", "status": "used", "note": "3.3 V output of the CM4 regulator: 300 mA per pin, 600 mA total. Feeds GPIO_VREF; heavy loads take their own regulator."},
+  "PWR33": {"net": "CM4_3V3", "dev": "POWER", "status": "used", "note": "3.3 V output of the CM4 regulator: 300 mA per pin, 600 mA total. Feeds GPIO_VREF and the status LEDs; heavy loads take their own regulator."},
   "PWR18": {"net": "", "dev": "NC", "status": "nc", "note": "1.8 V output not used."},
   "SD": {"net": "", "dev": "NC", "status": "nc", "note": "eMMC variant: SD interface is not brought out. Leave unconnected."},
   "HDMI0": {"net": "", "dev": "NC", "status": "nc", "note": "HDMI not used."},
@@ -51,7 +51,7 @@
   "18": {"net": "", "dev": "NC", "status": "nc", "note": "IEEE 1588 SYNC not used."},
   "20": {"net": "EEPROM_nWP", "dev": "CTRL", "status": "opt", "note": "Jumper to GND write-protects the bootloader EEPROM; otherwise leave floating (100 kΩ internal pull-up)."},
   "21": {"net": "ACT_nLED", "dev": "CTRL", "note": "Activity LED: active low, 20 mA max, 5 V tolerant."},
-  "36": {"net": "UART2_TXD", "dev": "GPS", "mode": "ALT4 TXD2", "note": "To GPS RX (Beitian BK-450; later an LTE modem with GPS). At boot the firmware probes GPIO0/1 as I2C0 for a HAT EEPROM — a few pulses reach the GPS RX, harmless. Overlay: dtoverlay=uart2."},
+  "36": {"net": "UART2_TXD", "dev": "GPS", "mode": "ALT4 TXD2", "note": "To GPS RX (Beitian BK-450; later an LTE modem with GPS). At boot the firmware probes GPIO0/1 as I2C0 for a HAT EEPROM — a few pulses reach the GPS RX; disable the probe with force_eeprom_read=0 (see Layout notes). Overlay: dtoverlay=uart2."},
   "35": {"net": "UART2_RXD", "dev": "GPS", "mode": "ALT4 RXD2", "note": "From GPS TX (NMEA/UBX, 3.3 V logic)."},
   "58": {"net": "I2C1_SDA", "dev": "I2C", "mode": "ALT0 SDA1", "note": "Sensor bus: ADS1115 (4× RSSI), INA228 / Matek INA-BM, RM3100, BMP390, BK-450 compass, receiver-module ID EEPROM. 1.8 kΩ pull-up already on the CM4 — do not add strong external pull-ups."},
   "56": {"net": "I2C1_SCL", "dev": "I2C", "mode": "ALT0 SCL1", "note": "I2C1 clock. 1.8 kΩ pull-up on the CM4."},
