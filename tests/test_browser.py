@@ -79,6 +79,9 @@ class TestPage(unittest.TestCase):
         self.assertIn("GND", rt); self.assertRegex(rt, "[А-Яа-я]")
 
     def test_legend_filter_and_summary(self):
+        self.page.click('#leg .lg[data-k="VDAC"]')
+        self.assertIn("1 пин", self.page.locator("#panel h2").inner_text())
+        self.page.click('#leg .lg[data-k="VDAC"]')
         self.page.click('#leg .lg[data-k="PCIE"]')
         self.assertEqual(self.visible_pads(), 8)
         self.assertIn("8 пинов", self.page.locator("#panel").inner_text())
@@ -89,6 +92,7 @@ class TestPage(unittest.TestCase):
         self.page.click('.seg button[data-layer="prj"]')
         self.page.click('#leg .lg[data-k="VDEC"]')
         self.assertEqual(self.visible_pads(), 4)   # 115/117/127/129; the six unused CSI1 lanes are status nc → "Not used"
+        self.assertIn("4 пина", self.page.locator("#panel h2").inner_text())
         self.assertGreaterEqual(self.page.locator("#routing li").count(), 1)
 
     def test_keyboard(self):
