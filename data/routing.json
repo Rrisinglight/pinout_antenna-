@@ -276,7 +276,7 @@
   {
    "title": "Wi-Fi & RF",
    "items": [
-    "No copper or other metal on any baseboard layer under the antenna: cut-out minimum 6.5 × 11 mm, ideally at least 8 × 15 mm (smaller degrades 2.4 GHz most). [DS §3.1]",
+    "No copper or other metal on any baseboard layer under the antenna: copper-free area minimum 6.5 × 11 mm, ideally at least 8 × 15 mm (smaller degrades 2.4 GHz most). [DS §3.1]",
     "The antenna area is at the short edge of the module: x = 0–6.5 mm, y = 10.5–21.5 mm on the board drawing (CM4 viewed from the top); hatched on the page. [DS Fig. 4]",
     "Keep at least 10 mm clearance around the PCB antenna; any nearby metal must have cut-outs; orient the antenna toward the edge of the plastic enclosure. The designer must check the performance. [DS §3.1]",
     "Use the external antenna where possible: a standard U.FL connector is on the module. [DS §3.1]",
