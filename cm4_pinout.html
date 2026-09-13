@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Baseboard CM4 — pinout 2×100</title>
+<title>CM4 baseboard — 2×100-pin pinout</title>
 <style>
 :root{
   --font:system-ui,"Segoe UI",Roboto,Ubuntu,"Noto Sans",sans-serif;
   --mono:ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;
   --fg:#0d0d0d;--fg2:#525252;--bg:#f5f5f5;--bg2:#ebebeb;--bg3:#d9d9d9;
-  --bd:#1a1a1a;--bd2:#737373;--bd3:#a3a3a3;--sel:#0d0d0d;
+  --bd:#1a1a1a;--bd2:#737373;--bd3:#a3a3a3;--sel:#0d0d0d;--lead:#000000;
   --r:10px;--focus:0 0 0 2px var(--bg),0 0 0 4px #404040;
 }
 @media (prefers-color-scheme:dark){:root{
   --fg:#f0f0f0;--fg2:#a3a3a3;--bg:#141414;--bg2:#1f1f1f;--bg3:#2a2a2a;
-  --bd:#e5e5e5;--bd2:#737373;--bd3:#404040;--sel:#ffffff;--focus:0 0 0 2px #141414,0 0 0 4px #a3a3a3;
+  --bd:#e5e5e5;--bd2:#737373;--bd3:#404040;--sel:#ffffff;--lead:#ffffff;--focus:0 0 0 2px #141414,0 0 0 4px #a3a3a3;
 }}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;padding:1rem clamp(16px,3vw,24px) 2rem;font-family:var(--font);color:var(--fg);background:var(--bg);line-height:1.45}
@@ -22,13 +22,10 @@ body{margin:0;padding:1rem clamp(16px,3vw,24px) 2rem;font-family:var(--font);col
 .top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-bottom:10px}
 h1{margin:0;font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:600;letter-spacing:-.02em}
 .sub{font-size:12px;color:var(--fg2)}
-.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .seg{display:inline-flex;border:1.5px solid var(--bd3);border-radius:20px;overflow:hidden}
 .seg button{font:inherit;font-size:12px;padding:5px 12px;border:0;background:transparent;color:var(--fg2);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
 .seg button:focus-visible{outline:none;box-shadow:var(--focus)}
-#q{font:inherit;font-size:13px;padding:5px 10px;border:1.5px solid var(--bd3);border-radius:20px;background:var(--bg2);color:var(--fg);min-width:220px;max-width:100%}
-#q:focus-visible{outline:none;box-shadow:var(--focus)}
 .legend{display:flex;flex-wrap:wrap;gap:5px 8px;margin-bottom:12px}
 .lg{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:11px;padding:3px 9px;border-radius:20px;cursor:pointer;border:1.5px solid transparent;color:var(--fg2);background:var(--bg2)}
 .lg:hover{border-color:var(--bd2)}.lg:focus-visible{outline:none;box-shadow:var(--focus)}
@@ -47,26 +44,41 @@ h1{margin:0;font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:600;letter-spacing
 .pad.dnc rect{stroke:#c33}
 .pad.opt rect{stroke:var(--fg2);stroke-dasharray:2 2}
 .pad.sel rect{stroke:var(--sel);stroke-width:3}
-.lbl{font-family:var(--font);font-size:11px;fill:var(--fg2)}.lbl.b{fill:var(--fg);font-weight:600}
-.outline{fill:none;stroke:var(--bd3);stroke-width:1.5}
-.hole{fill:none;stroke:var(--bd3)}.soc{fill:var(--bg3);stroke:var(--bd3)}
-.ant{fill:none;stroke:var(--bd2);stroke-dasharray:4 3}
-.panel{background:var(--bg2);border:1px solid var(--bd3);border-radius:var(--r);padding:12px 14px;font-size:13px;position:sticky;top:8px;max-height:calc(100vh - 16px);overflow:auto}
-.panel .ph{color:var(--fg2)}
-.panel h2{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.panel ul{padding-left:0;list-style:none;margin:6px 0}.panel li{margin:3px 0}
+.lbl{font-family:var(--font);font-size:11px;fill:var(--fg2)}.lbl.b{fill:var(--fg);font-weight:600}.lbl.s{font-size:9px}
+#outline{fill:var(--bg);stroke:var(--bd2);stroke-width:1.5}
+.hole{fill:var(--bg2);stroke:var(--bd2)}
+.conn{fill:var(--bg3);stroke:var(--bd2)}
+.pin1{fill:var(--fg)}
+.soc{fill:var(--bg3);stroke:var(--bd3)}
+.ant{fill:url(#hatch);stroke:var(--bd2);stroke-dasharray:4 3}
+.ufl{fill:none;stroke:var(--bd2)}
+.lead{fill:var(--lead);opacity:.08}
+.side{display:flex;flex-direction:column;gap:12px;position:sticky;top:8px;max-height:calc(100vh - 16px);overflow:auto}
+.card{background:var(--bg2);border:1px solid var(--bd3);border-radius:var(--r);padding:12px 14px;font-size:13px}
+.card .ph{color:var(--fg2)}
+.card h2{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h3{margin:0 0 6px;font-size:13px;font-weight:600}
+.card ul{padding-left:18px;margin:6px 0}.card li{margin:4px 0}
+.card ul.plain{padding-left:0;list-style:none}
 .pn{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 6px;border-radius:14px;color:#fff;font-size:12px;font-weight:600}
 .muted{color:var(--fg2);font-weight:400;font-size:12px}
 .kv{display:grid;grid-template-columns:max-content 1fr;gap:3px 10px;margin:8px 0}
 .kv dt{color:var(--fg2)}.kv dd{margin:0}code{font-family:var(--mono);font-size:12px}
 .chip{display:inline-block;padding:1px 7px;border-radius:10px;color:#fff;font-size:11px;font-weight:500}
 .dsq{margin:6px 0;padding:8px 10px;border-left:3px solid var(--bd3);background:var(--bg);font-size:12px;color:var(--fg2)}
+.dsq b{color:var(--fg)}
 .alt{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px}
 .alt th,.alt td{border:1px solid var(--bd3);padding:2px 5px;text-align:left;font-family:var(--mono)}
 .alt th{font-family:var(--font);color:var(--fg2);font-weight:500}
 .alt td.on{background:var(--bg3);font-weight:700}
 .linkbtn{font:inherit;font-size:12px;border:1px solid var(--bd3);background:var(--bg);color:var(--fg);border-radius:6px;padding:1px 7px;cursor:pointer}
-.panel .close{display:none;margin-left:auto}
+.card .close{display:none;margin-left:auto}
+.src{color:var(--fg2);font-size:11px}
+#general{margin-top:16px;font-size:13px}
+#general h2{font-size:15px;margin:0 0 6px}
+#general .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px 24px}
+#general h3{font-size:13px;margin:8px 0 4px}
+#general ul{padding-left:18px;margin:4px 0}#general li{margin:3px 0}
 .tbl-sec{margin-top:16px}
 .tbl-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:12px;color:var(--fg2)}
 #csv{font:inherit;font-size:12px;padding:4px 10px;border:1.5px solid var(--bd3);border-radius:20px;background:var(--bg2);color:var(--fg);cursor:pointer}
@@ -80,13 +92,11 @@ tr.row[hidden]{display:none}
 td.txt{min-width:280px;color:var(--fg2)}
 body.layer-ds .prj{display:none}
 .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
-.facts{margin-top:16px;font-size:13px}.facts summary{cursor:pointer;font-weight:600}
-.facts ul{padding-left:20px;margin:8px 0}.facts li{margin:4px 0}
 dialog{border:1px solid var(--bd3);border-radius:var(--r);background:var(--bg);color:var(--fg);max-width:min(90vw,700px)}
 dialog textarea{width:100%;height:50vh;font-family:var(--mono);font-size:11px}
 @media (max-width:1279px){
-  body.has-sel .panel{position:fixed;left:0;right:0;bottom:0;top:auto;max-height:45vh;border-radius:var(--r) var(--r) 0 0;z-index:10;box-shadow:0 -4px 16px rgba(0,0,0,.25)}
-  body.has-sel .panel .close{display:inline-block}
+  body.has-sel .side{position:fixed;left:0;right:0;bottom:0;top:auto;max-height:50vh;z-index:10;box-shadow:0 -4px 16px rgba(0,0,0,.25);background:var(--bg);padding:8px;gap:8px}
+  body.has-sel .card .close{display:inline-block}
 }
 </style>
 </head>
@@ -94,31 +104,31 @@ dialog textarea{width:100%;height:50vh;font-family:var(--mono);font-size:11px}
 <div class="w">
   <header class="top">
     <div>
-      <h1>Baseboard CM4 — pinout 2×100</h1>
+      <h1>CM4 baseboard — 2×100-pin pinout</h1>
       <div class="sub" id="sub"></div>
     </div>
-    <div class="ctrl">
-      <div class="seg" role="group" aria-label="Слой">
-        <button type="button" data-layer="ds" aria-pressed="true">Даташит</button>
-        <button type="button" data-layer="prj" aria-pressed="false">Проект</button>
-      </div>
-      <input id="q" type="search" placeholder="пин, GPIO, сигнал, цепь, uart3…" aria-label="Поиск">
+    <div class="seg" role="group" aria-label="Layer">
+      <button type="button" data-layer="ds" aria-pressed="true">Datasheet</button>
+      <button type="button" data-layer="prj" aria-pressed="false">Project</button>
     </div>
   </header>
-  <div class="legend" id="leg" role="toolbar" aria-label="Фильтр"></div>
+  <div class="legend" id="leg" role="toolbar" aria-label="Filter"></div>
   <div class="main">
     <div>
-      <div class="board-wrap"><svg id="board" viewBox="0 0 1000 440" role="group" aria-label="Разъёмы CM4, вид сверху"></svg></div>
-      <section class="tbl-sec" aria-label="Таблица пинов">
-        <div class="tbl-head"><span id="cnt"></span><button type="button" id="csv">Скопировать CSV</button></div>
+      <div class="board-wrap"><svg id="board" viewBox="0 0 1000 560" role="group" aria-label="CM4 connectors, top view"></svg></div>
+      <section id="general" aria-label="Layout notes"><h2>Layout notes</h2><div class="cols" id="general-cols"></div></section>
+      <section class="tbl-sec" aria-label="Pin table">
+        <div class="tbl-head"><span id="cnt"></span><button type="button" id="csv">Copy CSV</button></div>
         <div class="tbl-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
       </section>
-      <details class="facts"><summary>Факты для трассировки</summary><ul id="facts"></ul></details>
     </div>
-    <aside class="panel" id="panel" aria-live="polite"><div class="ph">Нажмите на пин</div></aside>
+    <aside class="side">
+      <div class="card" id="panel" aria-live="polite"><div class="ph">Click a pin.</div></div>
+      <div class="card" id="routing"><h3>Routing notes</h3><div class="ph">Select a pin or a legend entry.</div></div>
+    </aside>
   </div>
 </div>
-<dialog id="csvdlg"><form method="dialog"><p>Буфер обмена недоступен — скопируйте текст (Ctrl+A, Ctrl+C):</p><textarea readonly></textarea><p><button>Закрыть</button></p></form></dialog>
+<dialog id="csvdlg"><form method="dialog"><p>Clipboard not available — copy the text (Ctrl+A, Ctrl+C):</p><textarea readonly></textarea><p><button>Close</button></p></form></dialog>
 <script>
 /*DATA-START*/
 var DATA = {"source":{"cm4":"RP-008168-DS-4-cm4-datasheet.pdf","bcm2711":"RP-008248-DS-1-bcm2711-peripherals.pdf"},"pins":[{"n":1,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":2,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":3,"sig":"Ethernet_Pair3_P","ds":"Ethernet pair 3 positive (connect to transformer or MagJack)","conn":"J1","row":"odd","grp":"ETH","dir":"bidir","pair":{"partner":5,"z":100,"skew":4.29}},{"n":4,"sig":"Ethernet_Pair1_P","ds":"Ethernet pair 1 positive (connect to transformer or MagJack)","conn":"J1","row":"even","grp":"ETH","dir":"bidir","pair":{"partner":6,"z":100,"skew":0.0}},{"n":5,"sig":"Ethernet_Pair3_N","ds":"Ethernet pair 3 negative (connect to transformer or MagJack)","conn":"J1","row":"odd","grp":"ETH","dir":"bidir","pair":{"partner":3,"z":100,"skew":4.29}},{"n":6,"sig":"Ethernet_Pair1_N","ds":"Ethernet pair 1 negative (connect to transformer or MagJack)","conn":"J1","row":"even","grp":"ETH","dir":"bidir","pair":{"partner":4,"z":100,"skew":0.0}},{"n":7,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":8,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":9,"sig":"Ethernet_Pair2_N","ds":"Ethernet pair 2 negative (connect to transformer or MagJack)","conn":"J1","row":"odd","grp":"ETH","dir":"bidir","pair":{"partner":11,"z":100,"skew":3.82}},{"n":10,"sig":"Ethernet_Pair0_N","ds":"Ethernet pair 0 negative (connect to transformer or MagJack)","conn":"J1","row":"even","grp":"ETH","dir":"bidir","pair":{"partner":12,"z":100,"skew":5.23}},{"n":11,"sig":"Ethernet_Pair2_P","ds":"Ethernet pair 2 positive (connect to transformer or MagJack)","conn":"J1","row":"odd","grp":"ETH","dir":"bidir","pair":{"partner":9,"z":100,"skew":3.82}},{"n":12,"sig":"Ethernet_Pair0_P","ds":"Ethernet pair 0 positive (connect to transformer or MagJack)","conn":"J1","row":"even","grp":"ETH","dir":"bidir","pair":{"partner":10,"z":100,"skew":5.23}},{"n":13,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":14,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":15,"sig":"Ethernet_nLED3","ds":"Active-low Ethernet activity indicator (CM4_3.3V signal): typically a green LED is connected to this pin. IOL = 8mA @ VOL< 0.4V","conn":"J1","row":"odd","grp":"ETH","dir":"out"},{"n":16,"sig":"Ethernet_SYNC_IN","ds":"IEEE1588 SYNC Input pin (CM4_3.3V signal: IOL = 8mA @ VOL < 0.4V)","conn":"J1","row":"even","grp":"ETH","dir":"in"},{"n":17,"sig":"Ethernet_nLED2","ds":"Active-low Ethernet speed indicator (CM4_3.3V signal): typically a yellow LED is connected to this pin. A low state indicates the 1Gbit or 100Mbit link: IOL = 8mA @ VOL < 0.4V","conn":"J1","row":"odd","grp":"ETH","dir":"out"},{"n":18,"sig":"Ethernet_SYNC_OUT","ds":"IEEE1588 SYNC Output pin (CM4_3.3V signal: IOL = 8mA @ VOL < 0.4V)","conn":"J1","row":"even","grp":"ETH","dir":"out"},{"n":19,"sig":"Ethernet_nLED1","ds":"Active-low Ethernet speed indicator (CM4_3.3V signal): typically a yellow LED is connected to this pin. A low state indicates the 1Gbit or 10Mbit link: IOL = 8mA @ VOL < 0.4V","conn":"J1","row":"odd","grp":"ETH","dir":"out"},{"n":20,"sig":"EEPROM_nWP","ds":"Leave floating NB internally pulled up to CM4_3.3V via 100kΩ (V IL < 0.8V), but can be grounded to prevent writing to the on-board EEPROM which stores the bootcode","conn":"J1","row":"even","grp":"CTRL","dir":"in"},{"n":21,"sig":"Pi_nLED_Activity","ds":"Active-low Pi activity LED. 20mA Max, 5V tolerant (VOL < 0.4V). (this is the signal that drives the green LED on the Raspberry Pi 4 Model B)","conn":"J1","row":"odd","grp":"CTRL","dir":"out"},{"n":22,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":23,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":24,"sig":"GPIO26","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":26},{"n":25,"sig":"GPIO21","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":21},{"n":26,"sig":"GPIO19","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":19},{"n":27,"sig":"GPIO20","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":20},{"n":28,"sig":"GPIO13","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":13},{"n":29,"sig":"GPIO16","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":16},{"n":30,"sig":"GPIO6","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":6},{"n":31,"sig":"GPIO12","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":12},{"n":32,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":33,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":34,"sig":"GPIO5","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":5},{"n":35,"sig":"ID_SC","ds":"(BCM2711 GPIO 1) GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":1},{"n":36,"sig":"ID_SD","ds":"(BCM2711 GPIO 0) GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":0},{"n":37,"sig":"GPIO7","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":7},{"n":38,"sig":"GPIO11","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":11},{"n":39,"sig":"GPIO8","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":8},{"n":40,"sig":"GPIO9","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":9},{"n":41,"sig":"GPIO25","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":25},{"n":42,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":43,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":44,"sig":"GPIO10","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":10},{"n":45,"sig":"GPIO24","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":24},{"n":46,"sig":"GPIO22","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":22},{"n":47,"sig":"GPIO23","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":23},{"n":48,"sig":"GPIO27","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":27},{"n":49,"sig":"GPIO18","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":18},{"n":50,"sig":"GPIO17","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":17},{"n":51,"sig":"GPIO15","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":15},{"n":52,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":53,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":54,"sig":"GPIO4","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":4},{"n":55,"sig":"GPIO14","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V","conn":"J1","row":"odd","grp":"GPIO","dir":"bidir","gpio":14},{"n":56,"sig":"GPIO3","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V. Internal 1.8kΩ pull up to GPIO_VREF","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":3},{"n":57,"sig":"SD_CLK","ds":"SD card clock signal (only available on CM4Lite)","conn":"J1","row":"odd","grp":"SD","dir":"bidir"},{"n":58,"sig":"GPIO2","ds":"GPIO: typically a 3.3V signal, but can be a 1.8V signal by connecting GPIO_VREF to CM4_1.8V. Internal 1.8kΩ pull up to GPIO_VREF","conn":"J1","row":"even","grp":"GPIO","dir":"bidir","gpio":2},{"n":59,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":60,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":61,"sig":"SD_DAT3","ds":"SD card/eMMC Data3 signal (only available on CM4Lite)","conn":"J1","row":"odd","grp":"SD","dir":"bidir"},{"n":62,"sig":"SD_CMD","ds":"SD card/eMMC Command signal (only available on CM4Lite)","conn":"J1","row":"even","grp":"SD","dir":"bidir"},{"n":63,"sig":"SD_DAT0","ds":"SD card/eMMC Data0 signal (only available on CM4Lite)","conn":"J1","row":"odd","grp":"SD","dir":"bidir"},{"n":64,"sig":"SD_DAT5","ds":"SD card/eMMC Data5 signal (only available on CM4Lite)","conn":"J1","row":"even","grp":"SD","dir":"bidir"},{"n":65,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":66,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":67,"sig":"SD_DAT1","ds":"SD card/eMMC Data1 signal (only available on CM4Lite)","conn":"J1","row":"odd","grp":"SD","dir":"bidir"},{"n":68,"sig":"SD_DAT4","ds":"SD card/eMMC Data4 signal (only available on CM4Lite)","conn":"J1","row":"even","grp":"SD","dir":"bidir"},{"n":69,"sig":"SD_DAT2","ds":"SD card/eMMC Data2 signal (only available on CM4Lite)","conn":"J1","row":"odd","grp":"SD","dir":"bidir"},{"n":70,"sig":"SD_DAT7","ds":"SD card/eMMC Data7 signal (only available on CM4Lite)","conn":"J1","row":"even","grp":"SD","dir":"bidir"},{"n":71,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"odd","grp":"GND","dir":"gnd"},{"n":72,"sig":"SD_DAT6","ds":"SD card/eMMC Data6 signal (only available on CM4Lite)","conn":"J1","row":"even","grp":"SD","dir":"bidir"},{"n":73,"sig":"SD_VDD_OVERRIDE","ds":"Connect to CM4_3.3V to force SD card/eMMC interface to 1.8V signalling instead of 3.3V, otherwise leave unconnected. Typically only used if external eMMC is connected.","conn":"J1","row":"odd","grp":"SD","dir":"in"},{"n":74,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":75,"sig":"SD_PWR_ON","ds":"Output to power-switch for the SD card. The CM4 sets this pin high (3.3V) to signal that power to the SD card should be turned on. If booting from the SD card is required then a pullup should also be fitted so the power-switch defaults to on. (only available on CM4Lite)","conn":"J1","row":"odd","grp":"SD","dir":"out"},{"n":76,"sig":"Reserved","ds":"Do not connect anything to this pin.","conn":"J1","row":"even","grp":"RSV","dir":"nc"},{"n":77,"sig":"+5V (Input)","ds":"4.75V-5.25V. Main power input","conn":"J1","row":"odd","grp":"PWR5","dir":"power_in"},{"n":78,"sig":"GPIO_VREF","ds":"Must be connected to CM4_3.3V (pins 84 and 86) for 3.3V GPIO or CM4_1.8V (pins 88 and 90) for 1.8V GPIO. This pin cannot be floating or connected to ground.","conn":"J1","row":"even","grp":"PWR33","dir":"power_in"},{"n":79,"sig":"+5V (Input)","ds":"4.75V-5.25V. Main power input","conn":"J1","row":"odd","grp":"PWR5","dir":"power_in"},{"n":80,"sig":"SCL0","ds":"I2C clock pin (BCM2711 GPIO45): typically used for Camera and Display. Internal 1.8kΩ pull up to CM4_3.3V","conn":"J1","row":"even","grp":"I2C0","dir":"bidir","gpio":45},{"n":81,"sig":"+5V (Input)","ds":"4.75V-5.25V. Main power input","conn":"J1","row":"odd","grp":"PWR5","dir":"power_in"},{"n":82,"sig":"SDA0","ds":"I2C Data pin (BCM2711 GPIO44): typically used for Camera and Display. Internal 1.8kΩ pull up to CM4_3.3V","conn":"J1","row":"even","grp":"I2C0","dir":"bidir","gpio":44},{"n":83,"sig":"+5V (Input)","ds":"4.75V-5.25V. Main power input","conn":"J1","row":"odd","grp":"PWR5","dir":"power_in"},{"n":84,"sig":"CM4_3.3V (Output)","ds":"3.3V ± 2.5%. Power Output max 300mA per pin for a total of 600mA. This will be powered down during power-off or GLOBAL_EN being set low","conn":"J1","row":"even","grp":"PWR33","dir":"power_out"},{"n":85,"sig":"+5V (Input)","ds":"4.75V-5.25V. Main power input","conn":"J1","row":"odd","grp":"PWR5","dir":"power_in"},{"n":86,"sig":"CM4_3.3V (Output)","ds":"3.3V ± 2.5%. Power Output max 300mA per pin for a total of 600mA. This will be powered down during power-off or GLOBAL_EN being set low","conn":"J1","row":"even","grp":"PWR33","dir":"power_out"},{"n":87,"sig":"+5V (Input)","ds":"4.75V-5.25V. Main power input","conn":"J1","row":"odd","grp":"PWR5","dir":"power_in"},{"n":88,"sig":"CM4_1.8V (Output)","ds":"1.8V ± 2.5%. Power Output max 300mA per pin for a total of 600mA. This will be powered down during power-off or GLOBAL_EN being set low","conn":"J1","row":"even","grp":"PWR18","dir":"power_out"},{"n":89,"sig":"WL_nDisable","ds":"Can be left floating; if driven low the wireless interface will be disabled. Internally pulled up via 1.8kΩ to CM4_3.3V","conn":"J1","row":"odd","grp":"CTRL","dir":"bidir"},{"n":90,"sig":"CM4_1.8V (Output)","ds":"1.8V ± 2.5%. Power Output max 300mA per pin for a total of 600mA. This will be powered down during power-off or GLOBAL_EN being set low","conn":"J1","row":"even","grp":"PWR18","dir":"power_out"},{"n":91,"sig":"BT_nDisable","ds":"Can be left floating; if driven low the Bluetooth interface will be disabled. Internally pulled up via 1.8kΩ to CM4_3.3V","conn":"J1","row":"odd","grp":"CTRL","dir":"bidir"},{"n":92,"sig":"RUN_PG","ds":"Bidirectional pin. Can be driven low (via a 220Ω resistor) to reset the CM4 CPU. As an output, a high signals that power is good and CPU is running. Internally pulled up to +3.3V via 10kΩ","conn":"J1","row":"even","grp":"CTRL","dir":"bidir"},{"n":93,"sig":"nRPIBOOT","ds":"A low on this pin forces booting from an RPI server (e.g. PC or a Raspberry Pi); if not used leave floating. Internally pulled up via 10kΩ to +3.3V","conn":"J1","row":"odd","grp":"CTRL","dir":"in"},{"n":94,"sig":"AnalogIP1","ds":"Analogue input of the MXL7704: typically connected to CC pin of Type C power connector","conn":"J1","row":"even","grp":"ANALOG","dir":"in"},{"n":95,"sig":"PI_LED_nPWR","ds":"Active-low output to drive Power On LED. This signal needs to be buffered.","conn":"J1","row":"odd","grp":"CTRL","dir":"out"},{"n":96,"sig":"AnalogIP0","ds":"Analogue input of the MXL7704: typically connected to CC pin of Type C power connector","conn":"J1","row":"even","grp":"ANALOG","dir":"in"},{"n":97,"sig":"Camera_GPIO","ds":"Typically used to shut down the camera to reduce power. Reassigning this pin to another function isn’t recommended. CM4_3.3V signalling","conn":"J1","row":"odd","grp":"CTRL","dir":"out"},{"n":98,"sig":"GND","ds":"Ground (0V)","conn":"J1","row":"even","grp":"GND","dir":"gnd"},{"n":99,"sig":"GLOBAL_EN","ds":"Input. Drive low to power off CM4. Internally pulled up with a 100kΩ to +5V","conn":"J1","row":"odd","grp":"CTRL","dir":"in"},{"n":100,"sig":"nEXTRST","ds":"Output. Driven low during reset; Driven high (CM4_3.3V ) once CM4 CPU has started to boot","conn":"J1","row":"even","grp":"CTRL","dir":"out"},{"n":101,"sig":"USB_OTG_ID","ds":"Input (3.3V signal) USB OTG Pin. Internally pulled up. When grounded the CM4 becomes a USB host but the correct OS driver also needs to be used","conn":"J2","row":"odd","grp":"USB","dir":"in"},{"n":102,"sig":"PCIe_CLK_nREQ","ds":"Input (3.3V signal) PCIe clock request pin (low to request PCI clock). Internally pulled up","conn":"J2","row":"even","grp":"PCIE","dir":"in"},{"n":103,"sig":"USB_N","ds":"USB D-","conn":"J2","row":"odd","grp":"USB","dir":"bidir","pair":{"partner":105,"z":90,"skew":0.0}},{"n":104,"sig":"Reserved","ds":"Do not connect anything to this pin.","conn":"J2","row":"even","grp":"RSV","dir":"nc"},{"n":105,"sig":"USB_P","ds":"USB","conn":"J2","row":"odd","grp":"USB","dir":"bidir","pair":{"partner":103,"z":90,"skew":0.0}},{"n":106,"sig":"Reserved","ds":"Do not connect anything to this pin.","conn":"J2","row":"even","grp":"RSV","dir":"nc"},{"n":107,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":108,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":109,"sig":"PCIe_nRST","ds":"Output (+3.3V signal) PCIe reset active-low","conn":"J2","row":"odd","grp":"PCIE","dir":"out"},{"n":110,"sig":"PCIe_CLK_P","ds":"PCIe clock Out positive (100MHz) NB AC coupling capacitor included on CM4","conn":"J2","row":"even","grp":"PCIE","dir":"out","pair":{"partner":112,"z":90,"skew":0.65}},{"n":111,"sig":"VDAC_COMP","ds":"Video DAC output (TV OUT)","conn":"J2","row":"odd","grp":"VDAC","dir":"out"},{"n":112,"sig":"PCIe_CLK_N","ds":"PCIe clock Out negative (100MHz) NB AC coupling capacitor included on CM4","conn":"J2","row":"even","grp":"PCIE","dir":"out","pair":{"partner":110,"z":90,"skew":0.65}},{"n":113,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":114,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":115,"sig":"CAM1_D0_N","ds":"Input Camera1 D0 negative","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":117,"z":100,"skew":0.02}},{"n":116,"sig":"PCIe_RX_P","ds":"Input PCIe GEN 2 RX positive NB external AC coupling capacitor required","conn":"J2","row":"even","grp":"PCIE","dir":"in","pair":{"partner":118,"z":90,"skew":0.23}},{"n":117,"sig":"CAM1_D0_P","ds":"Input Camera1 D0 positive","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":115,"z":100,"skew":0.01}},{"n":118,"sig":"PCIe_RX_N","ds":"Input PCIe GEN 2 RX negative NB external AC coupling capacitor required","conn":"J2","row":"even","grp":"PCIE","dir":"in","pair":{"partner":116,"z":90,"skew":0.23}},{"n":119,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":120,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":121,"sig":"CAM1_D1_N","ds":"Input Camera1 D1 negative","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":123,"z":100,"skew":0.4}},{"n":122,"sig":"PCIe_TX_P","ds":"Output PCIe GEN 2 TX positive NB AC coupling capacitor included on CM4","conn":"J2","row":"even","grp":"PCIE","dir":"out","pair":{"partner":124,"z":90,"skew":0.0}},{"n":123,"sig":"CAM1_D1_P","ds":"Input Camera1 D1 positive","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":121,"z":100,"skew":0.4}},{"n":124,"sig":"PCIe_TX_N","ds":"Output PCIe GEN 2 TX positive NB AC coupling capacitor included on CM4","conn":"J2","row":"even","grp":"PCIE","dir":"out","pair":{"partner":122,"z":90,"skew":0.0}},{"n":125,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":126,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":127,"sig":"CAM1_C_N","ds":"Input Camera1 clock negative","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":129,"z":100,"skew":0.78}},{"n":128,"sig":"CAM0_D0_N","ds":"Input Camera0 D0 negative","conn":"J2","row":"even","grp":"CSI0","dir":"in","pair":{"partner":130,"z":100,"skew":0.06}},{"n":129,"sig":"CAM1_C_P","ds":"Input Camera1 clock positive","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":127,"z":100,"skew":0.78}},{"n":130,"sig":"CAM0_D0_P","ds":"Input Camera0 D0 positive","conn":"J2","row":"even","grp":"CSI0","dir":"in","pair":{"partner":128,"z":100,"skew":0.07}},{"n":131,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":132,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":133,"sig":"CAM1_D2_N","ds":"Input Camera1 D2 negative","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":135,"z":100,"skew":0.05}},{"n":134,"sig":"CAM0_D1_N","ds":"Input Camera0 D1 negative","conn":"J2","row":"even","grp":"CSI0","dir":"in","pair":{"partner":136,"z":100,"skew":0.0}},{"n":135,"sig":"CAM1_D2_P","ds":"Input Camera1 D2 positive","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":133,"z":100,"skew":0.04}},{"n":136,"sig":"CAM0_D1_P","ds":"Input Camera0 D1 positive","conn":"J2","row":"even","grp":"CSI0","dir":"in","pair":{"partner":134,"z":100,"skew":0.01}},{"n":137,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":138,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":139,"sig":"CAM1_D3_N","ds":"Input Camera1 D3 negative","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":141,"z":100,"skew":0.01}},{"n":140,"sig":"CAM0_C_N","ds":"Input Camera0 clock negative","conn":"J2","row":"even","grp":"CSI0","dir":"in","pair":{"partner":142,"z":100,"skew":0.02}},{"n":141,"sig":"CAM1_D3_P","ds":"Input Camera1 D3 positive","conn":"J2","row":"odd","grp":"CSI1","dir":"in","pair":{"partner":139,"z":100,"skew":0.0}},{"n":142,"sig":"CAM0_C_P","ds":"Input Camera0 clock positive","conn":"J2","row":"even","grp":"CSI0","dir":"in","pair":{"partner":140,"z":100,"skew":0.02}},{"n":143,"sig":"HDMI1_HOTPLUG","ds":"Input HDMI1 hotplug. Internally pulled down with a 100kΩ. 5V tolerant. (It can be connected directly to a HDMI connector; a small amount of ESD protection is provided on the CM4 by an on-board HDMI05-CL02F3)","conn":"J2","row":"odd","grp":"HDMI1","dir":"in"},{"n":144,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":145,"sig":"HDMI1_SDA","ds":"Bidirectional HDMI1 SDA. Internally pulled up with a 1.8kΩ. 5V tolerant. (It can be connected directly to a HDMI connector; a small amount of ESD protection is provided on the CM4 by an on-board HDMI05-CL02F3)","conn":"J2","row":"odd","grp":"HDMI1","dir":"bidir"},{"n":146,"sig":"HDMI1_TX2_P","ds":"Output HDMI1 TX2 positive","conn":"J2","row":"even","grp":"HDMI1","dir":"out","pair":{"partner":148,"z":100,"skew":0.01}},{"n":147,"sig":"HDMI1_SCL","ds":"Bidirectional HDMI1 SCL. Internally pulled up with a 1.8kΩ. 5V tolerant. (It can be connected directly to a HDMI connector; a small amount of ESD protection is provided on the CM4 by an on-board HDMI05-CL02F3)","conn":"J2","row":"odd","grp":"HDMI1","dir":"bidir"},{"n":148,"sig":"HDMI1_TX2_N","ds":"Output HDMI1 TX2 negative","conn":"J2","row":"even","grp":"HDMI1","dir":"out","pair":{"partner":146,"z":100,"skew":0.0}},{"n":149,"sig":"HDMI1_CEC","ds":"Input HDMI1 CEC. Internally pulled up with a 27kΩ. 5V tolerant. (It can be connected directly to a HDMI connector; a small amount of ESD protection is provided on the CM4 by an on-board HDMI05-CL02F3)","conn":"J2","row":"odd","grp":"HDMI1","dir":"in"},{"n":150,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":151,"sig":"HDMI0_CEC","ds":"Input HDMI0 CEC. Internally pulled up with a 27kΩ. 5V tolerant (It can be connected directly to a HDMI connector; a small amount of ESD protection is provided on the CM4 by an on-board HDMI05-CL02F3)","conn":"J2","row":"odd","grp":"HDMI0","dir":"in"},{"n":152,"sig":"HDMI1_TX1_P","ds":"Output HDMI1 TX1 positive","conn":"J2","row":"even","grp":"HDMI1","dir":"out","pair":{"partner":154,"z":100,"skew":1.0}},{"n":153,"sig":"HDMI0_HOTPLUG","ds":"Input HDMI0 hotplug. Internally pulled down 100kΩ. 5V tolerant. (It can be connected directly to a HDMI connector; a small amount of ESD protection is provided on the CM4 by an on-board HDMI05-CL02F3)","conn":"J2","row":"odd","grp":"HDMI0","dir":"in"},{"n":154,"sig":"HDMI1_TX1_N","ds":"Output HDMI1 TX1 negative","conn":"J2","row":"even","grp":"HDMI1","dir":"out","pair":{"partner":152,"z":100,"skew":1.0}},{"n":155,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":156,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":157,"sig":"DSI0_D0_N","ds":"Output Display0 D0 negative","conn":"J2","row":"odd","grp":"DSI0","dir":"out","pair":{"partner":159,"z":100,"skew":0.0}},{"n":158,"sig":"HDMI1_TX0_P","ds":"Output HDMI1 TX0 positive","conn":"J2","row":"even","grp":"HDMI1","dir":"out","pair":{"partner":160,"z":100,"skew":1.51}},{"n":159,"sig":"DSI0_D0_P","ds":"Output Display0 D0 positive","conn":"J2","row":"odd","grp":"DSI0","dir":"out","pair":{"partner":157,"z":100,"skew":0.0}},{"n":160,"sig":"HDMI1_TX0_N","ds":"Output HDMI1 TX0 negative","conn":"J2","row":"even","grp":"HDMI1","dir":"out","pair":{"partner":158,"z":100,"skew":1.51}},{"n":161,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":162,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":163,"sig":"DSI0_D1_N","ds":"Output Display0 D1 negative","conn":"J2","row":"odd","grp":"DSI0","dir":"out","pair":{"partner":165,"z":100,"skew":0.01}},{"n":164,"sig":"HDMI1_CLK_P","ds":"Output HDMI1 clock positive","conn":"J2","row":"even","grp":"HDMI1","dir":"out","pair":{"partner":166,"z":100,"skew":2.46}},{"n":165,"sig":"DSI0_D1_P","ds":"Output Display0 D1 positive","conn":"J2","row":"odd","grp":"DSI0","dir":"out","pair":{"partner":163,"z":100,"skew":0.01}},{"n":166,"sig":"HDMI1_CLK_N","ds":"Output HDMI1 clock negative","conn":"J2","row":"even","grp":"HDMI1","dir":"out","pair":{"partner":164,"z":100,"skew":2.47}},{"n":167,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":168,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":169,"sig":"DSI0_C_N","ds":"Output Display0 clock negative","conn":"J2","row":"odd","grp":"DSI0","dir":"out","pair":{"partner":171,"z":100,"skew":0.0}},{"n":170,"sig":"HDMI0_TX2_P","ds":"Output HDMI0 TX2 positive","conn":"J2","row":"even","grp":"HDMI0","dir":"out","pair":{"partner":172,"z":100,"skew":0.0}},{"n":171,"sig":"DSI0_C_P","ds":"Output Display0 clock positive","conn":"J2","row":"odd","grp":"DSI0","dir":"out","pair":{"partner":169,"z":100,"skew":0.0}},{"n":172,"sig":"HDMI0_TX2_N","ds":"Output HDMI0 TX2 negative","conn":"J2","row":"even","grp":"HDMI0","dir":"out","pair":{"partner":170,"z":100,"skew":0.0}},{"n":173,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":174,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":175,"sig":"DSI1_D0_N","ds":"Output Display1 D0 negative","conn":"J2","row":"odd","grp":"DSI1","dir":"out","pair":{"partner":177,"z":100,"skew":0.0}},{"n":176,"sig":"HDMI0_TX1_P","ds":"Output HDMI0 TX1 positive","conn":"J2","row":"even","grp":"HDMI0","dir":"out","pair":{"partner":178,"z":100,"skew":0.62}},{"n":177,"sig":"DSI1_D0_P","ds":"Output Display1 D0 positive","conn":"J2","row":"odd","grp":"DSI1","dir":"out","pair":{"partner":175,"z":100,"skew":0.01}},{"n":178,"sig":"HDMI0_TX1_N","ds":"Output HDMI0 TX1 negative","conn":"J2","row":"even","grp":"HDMI0","dir":"out","pair":{"partner":176,"z":100,"skew":0.62}},{"n":179,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":180,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":181,"sig":"DSI1_D1_N","ds":"Output Display1 D1 negative","conn":"J2","row":"odd","grp":"DSI1","dir":"out","pair":{"partner":183,"z":100,"skew":1.06}},{"n":182,"sig":"HDMI0_TX0_P","ds":"Output HDMI0 TX0 positive","conn":"J2","row":"even","grp":"HDMI0","dir":"out","pair":{"partner":184,"z":100,"skew":1.76}},{"n":183,"sig":"DSI1_D1_P","ds":"Output Display1 D1 positive","conn":"J2","row":"odd","grp":"DSI1","dir":"out","pair":{"partner":181,"z":100,"skew":1.06}},{"n":184,"sig":"HDMI0_TX0_N","ds":"Output HDMI0 TX0 negative","conn":"J2","row":"even","grp":"HDMI0","dir":"out","pair":{"partner":182,"z":100,"skew":1.76}},{"n":185,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":186,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":187,"sig":"DSI1_C_N","ds":"Output Display1 clock negative","conn":"J2","row":"odd","grp":"DSI1","dir":"out","pair":{"partner":189,"z":100,"skew":1.28}},{"n":188,"sig":"HDMI0_CLK_P","ds":"Output HDMI0 clock positive","conn":"J2","row":"even","grp":"HDMI0","dir":"out","pair":{"partner":190,"z":100,"skew":3.24}},{"n":189,"sig":"DSI1_C_P","ds":"Output Display1 clock positive","conn":"J2","row":"odd","grp":"DSI1","dir":"out","pair":{"partner":187,"z":100,"skew":1.28}},{"n":190,"sig":"HDMI0_CLK_N","ds":"Output HDMI0 clock negative","conn":"J2","row":"even","grp":"HDMI0","dir":"out","pair":{"partner":188,"z":100,"skew":3.25}},{"n":191,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":192,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":193,"sig":"DSI1_D2_N","ds":"Output Display1 D2 negative","conn":"J2","row":"odd","grp":"DSI1","dir":"out","pair":{"partner":195,"z":100,"skew":0.83}},{"n":194,"sig":"DSI1_D3_N","ds":"Output Display1 D3 negative","conn":"J2","row":"even","grp":"DSI1","dir":"out","pair":{"partner":196,"z":100,"skew":3.78}},{"n":195,"sig":"DSI1_D2_P","ds":"Output Display1 D2 positive","conn":"J2","row":"odd","grp":"DSI1","dir":"out","pair":{"partner":193,"z":100,"skew":0.84}},{"n":196,"sig":"DSI1_D3_P","ds":"Output Display1 D3 positive","conn":"J2","row":"even","grp":"DSI1","dir":"out","pair":{"partner":194,"z":100,"skew":3.79}},{"n":197,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"odd","grp":"GND","dir":"gnd"},{"n":198,"sig":"GND","ds":"Ground (0V)","conn":"J2","row":"even","grp":"GND","dir":"gnd"},{"n":199,"sig":"HDMI0_SDA","ds":"Bidirectional HDMI0 SDA. Internally pulled up with a 1.8kΩ. 5V tolerant. (It can be connected directly to a HDMI connector; a small amount of ESD protection is provided on the CM4 by an on-board HDMI05-CL02F3)","conn":"J2","row":"odd","grp":"HDMI0","dir":"bidir"},{"n":200,"sig":"HDMI0_SCL","ds":"Bidirectional HDMI0 SCL. Internally pulled up with a 1.8kΩ. 5V tolerant. (It can be connected directly to a HDMI connector; a small amount of ESD protection is provided on the CM4 by an on-board HDMI05-CL02F3)","conn":"J2","row":"even","grp":"HDMI0","dir":"bidir"}],"alt":{"0":{"pull":"High","alt":["SDA0","SA5","PCLK","SPI3_CE0_N","TXD2","SDA6"]},"1":{"pull":"High","alt":["SCL0","SA4","DE","SPI3_MISO","RXD2","SCL6"]},"2":{"pull":"High","alt":["SDA1","SA3","LCD_VSYNC","SPI3_MOSI","CTS2","SDA3"]},"3":{"pull":"High","alt":["SCL1","SA2","LCD_HSYNC","SPI3_SCLK","RTS2","SCL3"]},"4":{"pull":"High","alt":["GPCLK0","SA1","DPI_D0","SPI4_CE0_N","TXD3","SDA3"]},"5":{"pull":"High","alt":["GPCLK1","SA0","DPI_D1","SPI4_MISO","RXD3","SCL3"]},"6":{"pull":"High","alt":["GPCLK2","SOE_N / SE","DPI_D2","SPI4_MOSI","CTS3","SDA4"]},"7":{"pull":"High","alt":["SPI0_CE1_N","SWE_N / SRW_N","DPI_D3","SPI4_SCLK","RTS3","SCL4"]},"8":{"pull":"High","alt":["SPI0_CE0_N","SD0","DPI_D4","BSCSL / CE_N","TXD4","SDA4"]},"9":{"pull":"Low","alt":["SPI0_MISO","SD1","DPI_D5","BSCSL / MISO","RXD4","SCL4"]},"10":{"pull":"Low","alt":["SPI0_MOSI","SD2","DPI_D6","BSCSL SDA / MOSI","CTS4","SDA5"]},"11":{"pull":"Low","alt":["SPI0_SCLK","SD3","DPI_D7","BSCSL SCL / SCLK","RTS4","SCL5"]},"12":{"pull":"Low","alt":["PWM0_0","SD4","DPI_D8","SPI5_CE0_N","TXD5","SDA5"]},"13":{"pull":"Low","alt":["PWM0_1","SD5","DPI_D9","SPI5_MISO","RXD5","SCL5"]},"14":{"pull":"Low","alt":["TXD0","SD6","DPI_D10","SPI5_MOSI","CTS5","TXD1"]},"15":{"pull":"Low","alt":["RXD0","SD7","DPI_D11","SPI5_SCLK","RTS5","RXD1"]},"16":{"pull":"Low","alt":["<reserved>","SD8","DPI_D12","CTS0","SPI1_CE2_N","CTS1"]},"17":{"pull":"Low","alt":["<reserved>","SD9","DPI_D13","RTS0","SPI1_CE1_N","RTS1"]},"18":{"pull":"Low","alt":["PCM_CLK","SD10","DPI_D14","SPI6_CE0_N","SPI1_CE0_N","PWM0_0"]},"19":{"pull":"Low","alt":["PCM_FS","SD11","DPI_D15","SPI6_MISO","SPI1_MISO","PWM0_1"]},"20":{"pull":"Low","alt":["PCM_DIN","SD12","DPI_D16","SPI6_MOSI","SPI1_MOSI","GPCLK0"]},"21":{"pull":"Low","alt":["PCM_DOUT","SD13","DPI_D17","SPI6_SCLK","SPI1_SCLK","GPCLK1"]},"22":{"pull":"Low","alt":["SD0_CLK","SD14","DPI_D18","SD1_CLK","ARM_TRST","SDA6"]},"23":{"pull":"Low","alt":["SD0_CMD","SD15","DPI_D19","SD1_CMD","ARM_RTCK","SCL6"]},"24":{"pull":"Low","alt":["SD0_DAT0","SD16","DPI_D20","SD1_DAT0","ARM_TDO","SPI3_CE1_N"]},"25":{"pull":"Low","alt":["SD0_DAT1","SD17","DPI_D21","SD1_DAT1","ARM_TCK","SPI4_CE1_N"]},"26":{"pull":"Low","alt":["SD0_DAT2","<reserved>","DPI_D22","SD1_DAT2","ARM_TDI","SPI5_CE1_N"]},"27":{"pull":"Low","alt":["SD0_DAT3","<reserved>","DPI_D23","SD1_DAT3","ARM_TMS","SPI6_CE1_N"]}}};
@@ -134,29 +144,24 @@ var LIB = (function () {
     GPIO:{n:'GPIO',c:'#2E8B57'}, ETH:{n:'Ethernet',c:'#4A6FA5'}, SD:{n:'SD/eMMC',c:'#8B8B3A'}, USB:{n:'USB',c:'#C46A2B'},
     PCIE:{n:'PCIe',c:'#2F7FB8'}, CSI0:{n:'CSI0',c:'#3C9D8A'}, CSI1:{n:'CSI1',c:'#7FB8A8'},
     HDMI0:{n:'HDMI0',c:'#A05A9C'}, HDMI1:{n:'HDMI1',c:'#C489C0'}, DSI0:{n:'DSI0',c:'#6B5FB5'}, DSI1:{n:'DSI1',c:'#9A90D6'},
-    I2C0:{n:'I2C0',c:'#5B8AC2'}, CTRL:{n:'Управление',c:'#8A4FBF'}, RSV:{n:'Reserved',c:'#B22222'},
+    I2C0:{n:'I2C0',c:'#5B8AC2'}, CTRL:{n:'Control',c:'#8A4FBF'}, RSV:{n:'Reserved',c:'#B22222'},
     VDAC:{n:'TV-out',c:'#8C8C8C'}, ANALOG:{n:'Analog',c:'#8C8C8C'}
   };
-  var DIRS = {gnd:'земля', power_in:'вход питания', power_out:'выход питания', in:'вход', out:'выход', bidir:'двунаправленный', nc:'не подключать'};
-  var STATUS = {used:'используется', opt:'опционально / резерв', free:'свободен', nc:'не используется', dnc:'не подключать'};
-  var PITCH = 18, PAD = 16, X0 = 60, Y = {J1:{odd:52, even:72}, J2:{odd:340, even:360}};
+  var DIRS = {gnd:'ground', power_in:'power input', power_out:'power output', in:'input', out:'output', bidir:'bidirectional', nc:'do not connect'};
+  var STATUS = {used:'used', opt:'optional / reserved', free:'free', nc:'not used', dnc:'do not connect'};
+  var PITCH = 18, PAD = 16, X0 = 60, Y = {J1:{odd:34, even:54}, J2:{odd:484, even:504}};
+  var MM = 8.4, OX = 269, OY = 118;   // outline scale (px per mm) and origin of the 55×40 mm board
 
   function padXY(n) {
     var k = (n - 1) % 100, col = Math.floor(k / 2);
     return {x: X0 + (49 - col) * PITCH, y: Y[n <= 100 ? 'J1' : 'J2'][n % 2 ? 'odd' : 'even']};
   }
+  function mm(x, y) { return {x: OX + x * MM, y: OY + y * MM}; }
   function merge(pin, prj) {
     var explicit = prj.pins[String(pin.n)], e = explicit || prj.defaults[pin.grp] || {};
     var dev = e.dev || 'NC', d = prj.devices[dev];
     return {net: e.net || '', dev: dev, devName: d ? d.name : '', mode: e.mode || '',
             status: e.status || (explicit ? 'used' : 'free'), note: e.note || ''};
-  }
-  function busOf(mode) {
-    var m = /(?:^|\s)(?:TXD|RXD|RTS|CTS)(\d)$/.exec(mode); if (m) return 'uart' + m[1];
-    m = /(?:^|\s)(?:SDA|SCL)(\d)$/.exec(mode); if (m) return 'i2c' + m[1];
-    m = /(?:^|\s)SPI(\d)_/.exec(mode); if (m) return 'spi' + m[1];
-    m = /(?:^|\s)PWM(\d)_/.exec(mode); if (m) return 'pwm' + m[1];
-    return '';
   }
   function colorOf(pin, ov, layer, prj) {
     if (layer === 'ds') return GROUPS[pin.grp] ? GROUPS[pin.grp].c : '#8C8C8C';
@@ -168,24 +173,20 @@ var LIB = (function () {
     if (layer === 'ds') return pin.grp;
     return (ov.status === 'nc' || ov.status === 'dnc' || ov.status === 'free') ? 'NC' : ov.dev;
   }
-  function matches(pin, ov, alt, q) {
-    q = (q || '').trim().toLowerCase(); if (!q) return true;
-    if (/^\d+$/.test(q)) return pin.n === +q || pin.gpio === +q;
-    var hay = [pin.sig, ov.net, ov.mode, ov.dev, ov.devName, busOf(ov.mode), pin.gpio != null ? 'gpio' + pin.gpio : '']
-      .concat(alt ? alt.alt : []).join(' ').toLowerCase();
-    return hay.indexOf(q) >= 0;
+  function routingFor(pin, rt) {
+    return (rt.groups[pin.grp] || []).concat(rt.pins[String(pin.n)] || []);
   }
   function csvEsc(v) { v = String(v == null ? '' : v); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
   function csv(pins, prj) {
-    var lines = ['pin;conn;row;signal;group;dir;net;device;mode;status;pair;note;ds'];
+    var lines = ['pin;connector;row;signal;group;direction;net;device;mode;status;pair;note;datasheet'];
     pins.forEach(function (p) {
       var o = merge(p, prj);
       lines.push([p.n, p.conn, p.row, p.sig, p.grp, p.dir, o.net, o.dev, o.mode, o.status, p.pair ? p.pair.partner : '', o.note, p.ds].map(csvEsc).join(';'));
     });
     return lines.join('\n');
   }
-  return {GROUPS: GROUPS, DIRS: DIRS, STATUS: STATUS, PITCH: PITCH, PAD: PAD, padXY: padXY, merge: merge,
-          busOf: busOf, colorOf: colorOf, chipKey: chipKey, matches: matches, csv: csv};
+  return {GROUPS: GROUPS, DIRS: DIRS, STATUS: STATUS, PITCH: PITCH, PAD: PAD, MM: MM, padXY: padXY, mm: mm,
+          merge: merge, colorOf: colorOf, chipKey: chipKey, routingFor: routingFor, csv: csv};
 })();
 /*LIB-END*/
 </script>
@@ -195,9 +196,9 @@ var LIB = (function () {
   var NS = 'http://www.w3.org/2000/svg';
   var pins = DATA.pins, ALT = DATA.alt, byN = {};
   pins.forEach(function (p) { byN[p.n] = p; });
-  var state = {layer: 'ds', filter: null, q: '', sel: null};
+  var state = {layer: 'ds', filter: null, sel: null};
   var $ = function (s) { return document.querySelector(s); };
-  var board = $('#board'), leg = $('#leg'), panel = $('#panel'), qInput = $('#q');
+  var board = $('#board'), leg = $('#leg'), panel = $('#panel'), routing = $('#routing');
   var pads = {}, rows = {};
 
   function svg(tag, attrs, text) {
@@ -222,17 +223,105 @@ var LIB = (function () {
     return PROJECT.devices[key] ? PROJECT.devices[key].c : '#9A9A9A';
   }
   function visible(p) {
-    var o = ov(p);
-    if (state.filter && LIB.chipKey(p, o, state.layer) !== state.filter) return false;
-    return LIB.matches(p, o, p.gpio != null ? ALT[String(p.gpio)] : undefined, state.q);
+    if (!state.filter) return true;
+    return LIB.chipKey(p, ov(p), state.layer) === state.filter;
   }
 
-  /* ---------- таблица ---------- */
+  /* ---------- board ---------- */
+  function buildBoard() {
+    var defs = svg('defs', {}), pat = svg('pattern', {id: 'hatch', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)'});
+    pat.appendChild(svg('line', {x1: 0, y1: 0, x2: 0, y2: 6, stroke: '#8A8A8A', 'stroke-width': 1.2}));
+    defs.appendChild(pat); board.appendChild(defs);
+
+    var o = LIB.mm(0, 0), s = LIB.MM;
+    // leaders: pad strip ↔ connector body on the outline
+    var cL = LIB.mm(14, 0).x, cR = LIB.mm(36, 0).x;
+    var j1 = LIB.mm(0, 3).y, j2 = LIB.mm(0, 37).y;
+    board.appendChild(svg('polygon', {class: 'lead', points: [60, 70, 958, 70, cR, j1 - 1.5 * s, cL, j1 - 1.5 * s].join(',')}));
+    board.appendChild(svg('polygon', {class: 'lead', points: [cL, j2 + 1.5 * s, cR, j2 + 1.5 * s, 958, 478, 60, 478].join(',')}));
+    // outline 55×40 mm, corner radius 2 mm
+    board.appendChild(svg('rect', {id: 'outline', x: o.x, y: o.y, width: 55 * s, height: 40 * s, rx: 2 * s}));
+    [[3.5, 3.5], [51.5, 3.5], [3.5, 36.5], [51.5, 36.5]].forEach(function (c) {
+      var p = LIB.mm(c[0], c[1]); board.appendChild(svg('circle', {class: 'hole', cx: p.x, cy: p.y, r: 1.25 * s}));
+    });
+    // connector bodies (22×3 mm, centred x = 25 mm) with pin-1 marks at the right end
+    [['J1', 3], ['J2', 37]].forEach(function (c) {
+      var y = LIB.mm(0, c[1]).y;
+      board.appendChild(svg('rect', {class: 'conn', 'data-conn': c[0], x: cL, y: y - 1.5 * s, width: 22 * s, height: 3 * s, rx: 2}));
+      board.appendChild(svg('circle', {class: 'pin1', cx: cR - 1.2 * s, cy: y, r: 2.2}));
+      board.appendChild(svg('text', {class: 'lbl s', x: cL + 4, y: y + 3.5}, c[0] + (c[0] === 'J1' ? ' · pins 1–100' : ' · pins 101–200') + ' · pin 1 at the right end'));
+    });
+    // BCM2711 15×15 mm centred at (31.99, 23.03)
+    var soc = LIB.mm(31.9875 - 7.5, 23.025 - 7.5);
+    board.appendChild(svg('rect', {class: 'soc', x: soc.x, y: soc.y, width: 15 * s, height: 15 * s, rx: 4}));
+    board.appendChild(svg('text', {class: 'lbl b', x: soc.x + 7.5 * s, y: soc.y + 7.5 * s + 4, 'text-anchor': 'middle'}, 'BCM2711'));
+    // antenna keep-out 6.5×11 mm at the left edge, U.FL at (2.567, 9)
+    var a = LIB.mm(0, 10.5);
+    board.appendChild(svg('rect', {class: 'ant', x: a.x, y: a.y, width: 6.5 * s, height: 11 * s}));
+    var u = LIB.mm(2.567, 9);
+    board.appendChild(svg('circle', {class: 'ufl', cx: u.x, cy: u.y, r: 1.2 * s}));
+    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 11}, 'Antenna keep-out 6.5 × 11 mm:'));
+    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 23}, 'no copper on any baseboard layer'));
+    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 35}, 'under this area; U.FL above it.'));
+    // strip labels and caption
+    [[500, 24, 'middle', 'J1 · pins 1–100 · odd numbers in the top row', true],
+     [958, 24, 'end', '1 / 2', false], [60, 24, 'start', '99 / 100', false],
+     [500, 534, 'middle', 'J2 · pins 101–200 · odd numbers in the top row', true],
+     [958, 534, 'end', '101 / 102', false], [60, 534, 'start', '199 / 200', false],
+     [500, 552, 'middle', 'CM4 viewed from the top, to scale (datasheet Fig. 4). Connectors are on the underside; pin 1 is at the right end of each connector.', false]
+    ].forEach(function (l) {
+      board.appendChild(svg('text', {class: 'lbl' + (l[4] ? ' b' : ''), x: l[0], y: l[1], 'text-anchor': l[2]}, l[3]));
+    });
+    pins.forEach(function (p) {
+      var xy = LIB.padXY(p.n);
+      var g = svg('g', {class: 'pad', 'data-n': p.n, tabindex: 0, role: 'button'});
+      g.appendChild(svg('title', {}));
+      g.appendChild(svg('rect', {x: xy.x, y: xy.y, width: LIB.PAD, height: LIB.PAD, rx: 3}));
+      g.appendChild(svg('text', {x: xy.x + LIB.PAD / 2, y: xy.y + LIB.PAD / 2 + 2.5}, String(p.n)));
+      g.addEventListener('click', function () { select(p.n); });
+      g.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(p.n); }
+      });
+      board.appendChild(g);
+      pads[p.n] = g;
+    });
+  }
+
+  /* ---------- legend ---------- */
+  function buildLegend() {
+    leg.replaceChildren();
+    var src = state.layer === 'ds' ? LIB.GROUPS : PROJECT.devices;
+    Object.keys(src).forEach(function (key) {
+      var b = h('button', 'lg'); b.type = 'button'; b.dataset.k = key; b.setAttribute('aria-pressed', 'false');
+      var d = h('span', 'd'); d.style.background = chipColor(key); d.setAttribute('aria-hidden', 'true');
+      b.appendChild(d); b.appendChild(document.createTextNode(chipName(key)));
+      b.addEventListener('click', function () { setFilter(state.filter === key ? null : key); });
+      leg.appendChild(b);
+    });
+  }
+
+  /* ---------- general layout notes ---------- */
+  function buildGeneral() {
+    var cols = $('#general-cols');
+    (ROUTING.general || []).forEach(function (sec) {
+      var d = h('div'); d.appendChild(h('h3', null, sec.title));
+      var ul = h('ul'); (sec.items || []).forEach(function (t) { ul.appendChild(noteLi(t)); }); d.appendChild(ul);
+      cols.appendChild(d);
+    });
+  }
+  function noteLi(text) {
+    var li = h('li'), m = /^(.*?)\s*(\[[^\]]+\])\s*$/.exec(text);
+    if (m) { li.appendChild(document.createTextNode(m[1] + ' ')); li.appendChild(h('span', 'src', m[2])); }
+    else li.textContent = text;
+    return li;
+  }
+
+  /* ---------- table ---------- */
   function buildTable() {
     var thead = $('#tbl thead'), tbody = $('#tbl tbody'), tr = h('tr');
-    [['№', ''], ['Разъём', ''], ['Сигнал', ''], ['Группа', ''], ['Напр.', ''],
-     ['Цепь', 'prj'], ['Устройство', 'prj'], ['Режим', 'prj'], ['Статус', 'prj'], ['Примечание', 'prj'],
-     ['Пара', ''], ['Даташит', '']].forEach(function (c) { tr.appendChild(h('th', c[1] || null, c[0])); });
+    [['#', ''], ['Conn.', ''], ['Signal', ''], ['Group', ''], ['Dir.', ''],
+     ['Net', 'prj'], ['Device', 'prj'], ['Mode', 'prj'], ['Status', 'prj'], ['Note', 'prj'],
+     ['Pair', ''], ['Datasheet', '']].forEach(function (c) { tr.appendChild(h('th', c[1] || null, c[0])); });
     thead.appendChild(tr);
     pins.forEach(function (p) {
       var o = ov(p), r = h('tr', 'row'); r.dataset.n = p.n;
@@ -259,66 +348,14 @@ var LIB = (function () {
     var btn = $('#csv'), dlg = $('#csvdlg');
     btn.addEventListener('click', function () {
       var text = LIB.csv(pins, PROJECT);
-      function ok() { btn.textContent = 'Скопировано ✓'; setTimeout(function () { btn.textContent = 'Скопировать CSV'; }, 1500); }
+      function ok() { btn.textContent = 'Copied ✓'; setTimeout(function () { btn.textContent = 'Copy CSV'; }, 1500); }
       function fallback() { dlg.querySelector('textarea').value = text; dlg.showModal(); dlg.querySelector('textarea').select(); }
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback);
       else fallback();
     });
   }
 
-  /* ---------- факты ---------- */
-  function buildFacts() {
-    var ul = $('#facts');
-    (PROJECT.facts || []).forEach(function (f) { ul.appendChild(h('li', null, f)); });
-  }
-
-  /* ---------- схема ---------- */
-  function buildBoard() {
-    board.appendChild(svg('rect', {class: 'outline', x: 20, y: 20, width: 960, height: 400, rx: 12}));
-    [[40, 40], [960, 40], [40, 400], [960, 400]].forEach(function (c) {
-      board.appendChild(svg('circle', {class: 'hole', cx: c[0], cy: c[1], r: 7}));
-    });
-    board.appendChild(svg('rect', {class: 'ant', x: 34, y: 110, width: 72, height: 120, rx: 4}));
-    board.appendChild(svg('text', {class: 'lbl', x: 40, y: 246, 'font-size': 9}, 'Wi-Fi антенна: вырез в земле'));
-    board.appendChild(svg('rect', {class: 'soc', x: 440, y: 170, width: 140, height: 100, rx: 6}));
-    board.appendChild(svg('text', {class: 'lbl b', x: 510, y: 225, 'text-anchor': 'middle'}, 'BCM2711'));
-    [[500, 40, 'middle', 'J1 — пины 1–100 · нечётные в верхнем ряду', true],
-     [958, 40, 'end', '1 / 2 ↓', false], [60, 40, 'start', '99 / 100 ↓', false],
-     [500, 328, 'middle', 'J2 — пины 101–200 · нечётные в верхнем ряду', true],
-     [958, 328, 'end', '101 / 102 ↓', false], [60, 328, 'start', '199 / 200 ↓', false],
-     [500, 412, 'middle', 'CM4, вид сверху: разъёмы на нижней стороне модуля (Figure 4 даташита). Не в масштабе.', false]
-    ].forEach(function (l) {
-      board.appendChild(svg('text', {class: 'lbl' + (l[4] ? ' b' : ''), x: l[0], y: l[1], 'text-anchor': l[2]}, l[3]));
-    });
-    pins.forEach(function (p) {
-      var xy = LIB.padXY(p.n);
-      var g = svg('g', {class: 'pad', 'data-n': p.n, tabindex: 0, role: 'button'});
-      g.appendChild(svg('title', {}));
-      g.appendChild(svg('rect', {x: xy.x, y: xy.y, width: LIB.PAD, height: LIB.PAD, rx: 3}));
-      g.appendChild(svg('text', {x: xy.x + LIB.PAD / 2, y: xy.y + LIB.PAD / 2 + 2.5}, String(p.n)));
-      g.addEventListener('click', function () { select(p.n); });
-      g.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(p.n); }
-      });
-      board.appendChild(g);
-      pads[p.n] = g;
-    });
-  }
-
-  /* ---------- легенда ---------- */
-  function buildLegend() {
-    leg.replaceChildren();
-    var src = state.layer === 'ds' ? LIB.GROUPS : PROJECT.devices;
-    Object.keys(src).forEach(function (key) {
-      var b = h('button', 'lg'); b.type = 'button'; b.dataset.k = key; b.setAttribute('aria-pressed', 'false');
-      var d = h('span', 'd'); d.style.background = chipColor(key); d.setAttribute('aria-hidden', 'true');
-      b.appendChild(d); b.appendChild(document.createTextNode(chipName(key)));
-      b.addEventListener('click', function () { setFilter(state.filter === key ? null : key); });
-      leg.appendChild(b);
-    });
-  }
-
-  /* ---------- панель ---------- */
+  /* ---------- cards ---------- */
   function kv(dl, k, v) {
     dl.appendChild(h('dt', null, k));
     var dd = h('dd');
@@ -328,32 +365,43 @@ var LIB = (function () {
   function chip(text, color) { var s = h('span', 'chip', text); s.style.background = color; return s; }
   function code(text) { return h('code', null, text); }
   function pinBtn(n) {
-    var b = h('button', 'linkbtn pinbtn', 'пин ' + n); b.type = 'button';
+    var b = h('button', 'linkbtn pinbtn', 'pin ' + n); b.type = 'button';
     b.addEventListener('click', function () { select(n); });
     return b;
+  }
+  function closeBtn(fn) {
+    var c = h('button', 'close linkbtn', '✕'); c.type = 'button'; c.setAttribute('aria-label', 'Close');
+    c.addEventListener('click', fn); return c;
   }
   function altTable(gpio, mode) {
     var a = ALT[String(gpio)], t = h('table', 'alt'), tr1 = h('tr'), tr2 = h('tr');
     var used = /^ALT(\d)/.exec(mode || '');
     a.alt.forEach(function (name, i) {
       tr1.appendChild(h('th', null, 'ALT' + i));
-      var td = h('td', used && +used[1] === i ? 'on' : null, name || '—');
-      tr2.appendChild(td);
+      tr2.appendChild(h('td', used && +used[1] === i ? 'on' : null, name || '—'));
     });
     t.appendChild(tr1); t.appendChild(tr2);
     return t;
+  }
+  function renderRouting(items, title) {
+    var frag = document.createDocumentFragment();
+    frag.appendChild(h('h3', null, title || 'Routing notes'));
+    if (!items || !items.length) {
+      frag.appendChild(h('div', 'ph', 'No pin-specific routing constraint. See Layout notes below the board.'));
+    } else {
+      var ul = h('ul'); items.forEach(function (t) { ul.appendChild(noteLi(t)); }); frag.appendChild(ul);
+    }
+    routing.replaceChildren(frag);
   }
   function renderPanel() {
     var frag = document.createDocumentFragment();
     if (state.sel == null) {
       if (state.filter) {
         var list = pins.filter(function (p) { return LIB.chipKey(p, ov(p), state.layer) === state.filter; });
-        var h2f = h('h2', null, chipName(state.filter) + ' · ' + list.length + ' пин.');
-        var closeF = h('button', 'close linkbtn', '✕'); closeF.type = 'button'; closeF.setAttribute('aria-label', 'Закрыть');
-        closeF.addEventListener('click', function () { setFilter(null); });
-        h2f.appendChild(closeF);
+        var h2f = h('h2', null, chipName(state.filter) + ' · ' + list.length + ' pins');
+        h2f.appendChild(closeBtn(function () { setFilter(null); }));
         frag.appendChild(h2f);
-        var ul = h('ul');
+        var ul = h('ul', 'plain');
         list.forEach(function (p) {
           var li = h('li'), o = ov(p);
           li.appendChild(pinBtn(p.n));
@@ -361,51 +409,54 @@ var LIB = (function () {
           ul.appendChild(li);
         });
         frag.appendChild(ul);
+        panel.replaceChildren(frag);
+        var grpItems = state.layer === 'ds' ? (ROUTING.groups[state.filter] || []) : [];
+        renderRouting(grpItems, 'Routing notes · ' + chipName(state.filter));
       } else {
-        frag.appendChild(h('div', 'ph', 'Нажмите на пин'));
+        frag.appendChild(h('div', 'ph', 'Click a pin.'));
+        panel.replaceChildren(frag);
+        renderRouting([], 'Routing notes');
+        routing.querySelector('.ph').textContent = 'Select a pin or a legend entry.';
       }
-      panel.replaceChildren(frag);
       return;
     }
     var p = byN[state.sel], o = ov(p), col = LIB.colorOf(p, o, state.layer, PROJECT);
     var h2 = h('h2');
     var pn = h('span', 'pn', String(p.n)); pn.style.background = col; h2.appendChild(pn);
     h2.appendChild(document.createTextNode(p.sig + ' '));
-    h2.appendChild(h('span', 'muted', p.conn + ' · ' + (p.row === 'odd' ? 'нечётный (верхний) ряд' : 'чётный (нижний) ряд')));
-    var close = h('button', 'close linkbtn', '✕'); close.type = 'button'; close.setAttribute('aria-label', 'Закрыть');
-    close.addEventListener('click', function () { select(null); });
-    h2.appendChild(close);
+    h2.appendChild(h('span', 'muted', p.conn + ' · ' + (p.row === 'odd' ? 'odd (top) row' : 'even (bottom) row')));
+    h2.appendChild(closeBtn(function () { select(null); }));
     frag.appendChild(h2);
     if (state.layer === 'prj') {
       var dl = h('dl', 'kv');
-      kv(dl, 'Цепь', o.net ? code(o.net) : '—');
-      kv(dl, 'Устройство', chip(o.devName || o.dev, col));
-      if (o.mode) kv(dl, 'Режим', code(o.mode));
-      kv(dl, 'Статус', LIB.STATUS[o.status] || o.status);
-      if (o.note) kv(dl, 'Примечание', o.note);
+      kv(dl, 'Net', o.net ? code(o.net) : '—');
+      kv(dl, 'Device', chip(o.devName || o.dev, col));
+      if (o.mode) kv(dl, 'Mode', code(o.mode));
+      kv(dl, 'Status', LIB.STATUS[o.status] || o.status);
+      if (o.note) kv(dl, 'Note', o.note);
       frag.appendChild(dl);
     }
     var dl2 = h('dl', 'kv');
-    kv(dl2, 'Группа', chip(LIB.GROUPS[p.grp].n, LIB.GROUPS[p.grp].c));
-    kv(dl2, 'Направление', LIB.DIRS[p.dir] || p.dir);
+    kv(dl2, 'Group', chip(LIB.GROUPS[p.grp].n, LIB.GROUPS[p.grp].c));
+    kv(dl2, 'Direction', LIB.DIRS[p.dir] || p.dir);
     if (p.gpio != null) {
       var a = ALT[String(p.gpio)];
-      kv(dl2, 'BCM2711', 'GPIO' + p.gpio + (a ? ' · при загрузке pull-' + (a.pull === 'High' ? 'up' : 'down') : ''));
+      kv(dl2, 'BCM2711', 'GPIO' + p.gpio + (a ? ' · boot pull-' + (a.pull === 'High' ? 'up' : 'down') : ''));
     }
     if (p.pair) {
       var q = byN[p.pair.partner], span = h('span');
       span.appendChild(pinBtn(q.n));
-      span.appendChild(document.createTextNode(' ' + q.sig + ' · ' + p.pair.z + ' Ω · разбег на CM4: ' + p.pair.skew + ' / ' + q.pair.skew + ' мм'));
-      kv(dl2, 'Дифф-пара', span);
+      span.appendChild(document.createTextNode(' ' + q.sig + ' · ' + p.pair.z + ' Ω · CM4 trace skew ' + p.pair.skew + ' / ' + q.pair.skew + ' mm'));
+      kv(dl2, 'Differential pair', span);
     }
-    if (PROJECT.ds_notes && PROJECT.ds_notes[p.grp]) kv(dl2, 'Правило', PROJECT.ds_notes[p.grp]);
     frag.appendChild(dl2);
-    frag.appendChild(h('div', 'dsq', p.ds));
+    var dq = h('div', 'dsq'); dq.appendChild(h('b', null, 'Datasheet: ')); dq.appendChild(document.createTextNode(p.ds)); frag.appendChild(dq);
     if (p.gpio != null && ALT[String(p.gpio)]) frag.appendChild(altTable(p.gpio, state.layer === 'prj' ? o.mode : ''));
     panel.replaceChildren(frag);
+    renderRouting(LIB.routingFor(p, ROUTING), 'Routing notes · pin ' + p.n);
   }
 
-  /* ---------- применение состояния ---------- */
+  /* ---------- state ---------- */
   function apply() {
     document.body.classList.toggle('layer-ds', state.layer === 'ds');
     document.body.classList.toggle('layer-prj', state.layer === 'prj');
@@ -425,7 +476,7 @@ var LIB = (function () {
       g.querySelector('rect').setAttribute('fill', LIB.colorOf(p, o, state.layer, PROJECT));
       var label = p.n + ' · ' + p.sig + (state.layer === 'prj' && o.net ? ' · ' + o.net : '');
       g.querySelector('title').textContent = label;
-      g.setAttribute('aria-label', 'Пин ' + label);
+      g.setAttribute('aria-label', 'Pin ' + label);
       var r = rows[p.n];
       if (r) {
         r.hidden = !v;
@@ -433,7 +484,7 @@ var LIB = (function () {
         r.querySelector('.sw').style.background = LIB.colorOf(p, o, state.layer, PROJECT);
       }
     });
-    var cnt = $('#cnt'); if (cnt) cnt.textContent = 'Показано ' + shown + ' из 200';
+    var cnt = $('#cnt'); if (cnt) cnt.textContent = 'Showing ' + shown + ' of 200 pins';
     leg.querySelectorAll('.lg').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.k === state.filter)); });
     document.querySelectorAll('.seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.layer === state.layer)); });
     renderPanel();
@@ -441,15 +492,12 @@ var LIB = (function () {
   function select(n) { state.sel = n == null ? null : +n; apply(); }
   function setLayer(layer) { state.layer = layer; state.filter = null; buildLegend(); apply(); }
   function setFilter(key) { state.filter = key; apply(); }
-  function setQuery(q) { state.q = q; if (qInput.value !== q) qInput.value = q; apply(); }
 
-  /* ---------- события ---------- */
   document.querySelectorAll('.seg button').forEach(function (b) {
     b.addEventListener('click', function () { setLayer(b.dataset.layer); });
   });
-  qInput.addEventListener('input', function () { setQuery(qInput.value); });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { state.sel = null; state.filter = null; state.q = ''; qInput.value = ''; apply(); return; }
+    if (e.key === 'Escape') { state.sel = null; state.filter = null; apply(); return; }
     if ((e.target.closest && e.target.closest('input,textarea')) || state.sel == null) return;
     var n = state.sel, lo = n <= 100 ? 1 : 101, hi = lo + 99, next = null;
     if (e.key === 'ArrowLeft') next = n + 2;
@@ -459,13 +507,12 @@ var LIB = (function () {
     if (next != null && next >= lo && next <= hi) { e.preventDefault(); select(next); }
   });
 
-  window.PINOUT = {select: select, setLayer: setLayer, setFilter: setFilter, setQuery: setQuery, state: state,
-                   apply: apply, ov: ov, byN: byN};
-  $('#sub').textContent = (PROJECT.meta.cm4 || '') + (PROJECT.meta.date ? ' · ред. ' + PROJECT.meta.rev + ' от ' + PROJECT.meta.date : '');
+  window.PINOUT = {select: select, setLayer: setLayer, setFilter: setFilter, state: state, apply: apply, ov: ov, byN: byN};
+  $('#sub').textContent = (PROJECT.meta.cm4 || '') + (PROJECT.meta.date ? ' · rev. ' + PROJECT.meta.rev + ', ' + PROJECT.meta.date : '');
   buildBoard();
   buildLegend();
+  buildGeneral();
   buildTable();
-  buildFacts();
   bindCsv();
   apply();
 })();

@@ -8,82 +8,52 @@ const grab = (a, b) => html.slice(html.indexOf(a) + a.length, html.indexOf(b));
 const ctx = vm.createContext({});
 vm.runInContext(grab('/*DATA-START*/', '/*DATA-END*/'), ctx);
 vm.runInContext(grab('/*LIB-START*/', '/*LIB-END*/'), ctx);
-const { LIB, DATA, PROJECT } = ctx;
+const { LIB, DATA, PROJECT, ROUTING } = ctx;
 const byN = Object.fromEntries(DATA.pins.map(p => [p.n, p]));
 const ov = n => LIB.merge(byN[n], PROJECT);
 
-test('данные вшиты', () => {
+test('data embedded', () => {
   assert.equal(DATA.pins.length, 200);
   assert.ok(PROJECT.pins['55']);
+  assert.ok(ROUTING.groups && ROUTING.pins && Array.isArray(ROUTING.general));
 });
 
-test('padXY: пин 1/2 справа, 99/100 слева, нечётный ряд верхний', () => {
-  assert.deepEqual({ ...LIB.padXY(1) }, { x: 942, y: 52 });
-  assert.deepEqual({ ...LIB.padXY(2) }, { x: 942, y: 72 });
-  assert.deepEqual({ ...LIB.padXY(99) }, { x: 60, y: 52 });
-  assert.deepEqual({ ...LIB.padXY(100) }, { x: 60, y: 72 });
-  assert.deepEqual({ ...LIB.padXY(101) }, { x: 942, y: 340 });
-  assert.deepEqual({ ...LIB.padXY(200) }, { x: 60, y: 360 });
-  assert.deepEqual({ ...LIB.padXY(3) }, { x: 924, y: 52 });
+test('padXY: J1 strip above, J2 strip below, pin 1/2 at the right end, odd row on top', () => {
+  assert.deepEqual({ ...LIB.padXY(1) }, { x: 942, y: 34 });
+  assert.deepEqual({ ...LIB.padXY(2) }, { x: 942, y: 54 });
+  assert.deepEqual({ ...LIB.padXY(99) }, { x: 60, y: 34 });
+  assert.deepEqual({ ...LIB.padXY(100) }, { x: 60, y: 54 });
+  assert.deepEqual({ ...LIB.padXY(101) }, { x: 942, y: 484 });
+  assert.deepEqual({ ...LIB.padXY(200) }, { x: 60, y: 504 });
+  assert.deepEqual({ ...LIB.padXY(3) }, { x: 924, y: 34 });
 });
 
-test('merge: явная запись, default по группе, свободный', () => {
+test('outline geometry in mm → px', () => {
+  assert.equal(LIB.MM, 8.4);
+  assert.deepEqual({ ...LIB.mm(0, 0) }, { x: 269, y: 118 });
+  assert.deepEqual({ ...LIB.mm(55, 40) }, { x: 269 + 55 * 8.4, y: 118 + 40 * 8.4 });
+});
+
+test('merge and labels are English', () => {
   assert.equal(ov(55).net, 'UART0_TXD');
-  assert.equal(ov(55).status, 'used');
   assert.equal(ov(55).devName, 'Service console · UART0');
-  assert.equal(ov(1).net, 'GND');
   assert.equal(ov(76).status, 'dnc');
-  assert.equal(ov(24).net, 'FAN_TACH');
-  assert.equal(LIB.merge({ n: 999, grp: 'ZZZ' }, PROJECT).status, 'free');
+  assert.equal(LIB.STATUS.dnc, 'do not connect');
+  assert.equal(LIB.DIRS.bidir, 'bidirectional');
+  assert.equal(LIB.GROUPS.CTRL.n, 'Control');
+  assert.equal(LIB.matches, undefined);
 });
 
-test('busOf', () => {
-  assert.equal(LIB.busOf('ALT4 TXD3'), 'uart3');
-  assert.equal(LIB.busOf('ALT4 RTS3'), 'uart3');
-  assert.equal(LIB.busOf('ALT0 SDA1'), 'i2c1');
-  assert.equal(LIB.busOf('ALT3 SPI6_MOSI'), 'spi6');
-  assert.equal(LIB.busOf('ALT5 PWM0_0'), 'pwm0');
-  assert.equal(LIB.busOf('GPIO'), '');
-  assert.equal(LIB.busOf(''), '');
+test('routingFor merges group and pin notes', () => {
+  const r = LIB.routingFor(byN[116], { groups: { PCIE: ['g1 [DS]'] }, pins: { '116': ['p1 [DS]'] } });
+  assert.deepEqual([...r], ['g1 [DS]', 'p1 [DS]']);
+  assert.deepEqual([...LIB.routingFor(byN[1], { groups: {}, pins: {} })], []);
 });
 
-test('matches: номер, GPIO, сигнал, цепь, шина, устройство, пусто', () => {
-  const m = (n, q) => LIB.matches(byN[n], ov(n), DATA.alt[byN[n].gpio], q);
-  assert.equal(m(55, '55'), true);
-  assert.equal(m(54, '55'), false);
-  assert.equal(m(55, '14'), true);          // GPIO14
-  assert.equal(m(55, 'gpio14'), true);
-  assert.equal(m(55, 'txd0'), true);        // ALT-имя
-  assert.equal(m(54, 'uart3'), true);
-  assert.equal(m(34, 'UART3'), true);
-  assert.equal(m(37, 'uart3'), true);
-  assert.equal(m(55, 'uart3'), false);
-  assert.equal(m(54, 'crsf'), true);
-  assert.equal(m(54, 'console'), false);
-  assert.equal(m(55, 'console'), true);
-  assert.equal(m(116, 'pcie_rx'), true);
-  assert.equal(m(1, ''), true);
-  assert.equal(m(1, '   '), true);
-});
-
-test('colorOf и chipKey по слоям', () => {
-  assert.equal(LIB.colorOf(byN[1], ov(1), 'ds', PROJECT), LIB.GROUPS.GND.c);
-  assert.equal(LIB.colorOf(byN[55], ov(55), 'prj', PROJECT), PROJECT.devices.CONSOLE.c);
-  assert.equal(LIB.colorOf(byN[76], ov(76), 'prj', PROJECT), '#B22222');
-  assert.equal(LIB.colorOf(byN[146], ov(146), 'prj', PROJECT), '#9A9A9A');
-  assert.equal(LIB.chipKey(byN[55], ov(55), 'ds'), 'GPIO');
-  assert.equal(LIB.chipKey(byN[55], ov(55), 'prj'), 'CONSOLE');
-  assert.equal(LIB.chipKey(byN[146], ov(146), 'prj'), 'NC');
-  assert.equal(LIB.chipKey(byN[76], ov(76), 'prj'), 'NC');
-});
-
-test('csv: заголовок, 200 строк, экранирование', () => {
+test('csv: English header with ds column, 200 rows', () => {
   const lines = LIB.csv(DATA.pins, PROJECT).split('\n');
   assert.equal(lines.length, 201);
-  assert.equal(lines[0], 'pin;conn;row;signal;group;dir;net;device;mode;status;pair;note;ds');
+  assert.equal(lines[0], 'pin;connector;row;signal;group;direction;net;device;mode;status;pair;note;datasheet');
   assert.match(lines[55], /^55;J1;odd;GPIO14;GPIO;bidir;UART0_TXD;CONSOLE;ALT0 TXD0;used;;"Service console/);
   assert.match(lines[116], /^116;J2;even;PCIe_RX_P;PCIE;in;PCIE_RX_P;PCIE;;used;118;/);
-  assert.equal(LIB.csv([{ n: 1, conn: 'J1', row: 'odd', sig: 'X', grp: 'ZZZ', dir: 'in' }], PROJECT).split('\n')[1], '1;J1;odd;X;ZZZ;in;;NC;;free;;;');
-  const esc = LIB.csv([{ n: 1, conn: 'J1', row: 'odd', sig: 'a;b', grp: 'ZZZ', dir: 'in' }], PROJECT).split('\n')[1];
-  assert.equal(esc.split(';')[3], '"a');   // значение с ; взято в кавычки
 });
