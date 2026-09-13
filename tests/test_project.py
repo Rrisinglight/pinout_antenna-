@@ -29,9 +29,15 @@ class TestProject(unittest.TestCase):
         self.assertIn("NC", self.prj["devices"])
         self.assertIn("VDEC", self.prj["devices"])
 
-    def test_english_only(self):
-        blob = json.dumps(self.prj, ensure_ascii=False)
-        self.assertIsNone(CYR.search(blob), "Cyrillic text left in project.json")
+    def test_notes_russian(self):
+        for k, e in self.prj["pins"].items():
+            self.assertIsNotNone(CYR.search(e.get("note", "")), f"pin {k} note is not Russian")
+            for f in ("net", "mode", "dev"):
+                self.assertTrue(e.get(f, "").isascii(), f"pin {k} {f} must stay ASCII")
+        for g, e in self.prj["defaults"].items():
+            self.assertIsNotNone(CYR.search(e.get("note", "")), f"defaults {g} note is not Russian")
+        for k, d in self.prj["devices"].items():
+            self.assertIsNone(CYR.search(d["name"]), f"device {k} name must stay English")
 
     def test_pins_reference_existing(self):
         for k, e in self.prj["pins"].items():
