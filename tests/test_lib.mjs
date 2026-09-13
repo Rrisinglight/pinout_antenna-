@@ -8,7 +8,7 @@ const grab = (a, b) => html.slice(html.indexOf(a) + a.length, html.indexOf(b));
 const ctx = vm.createContext({});
 vm.runInContext(grab('/*DATA-START*/', '/*DATA-END*/'), ctx);
 vm.runInContext(grab('/*LIB-START*/', '/*LIB-END*/'), ctx);
-const { LIB, DATA, PROJECT, ROUTING, DS_RU } = ctx;
+const { LIB, DATA, PROJECT, ROUTING, DS_RU, RATIONALE } = ctx;
 const byN = Object.fromEntries(DATA.pins.map(p => [p.n, p]));
 const ov = n => LIB.merge(byN[n], PROJECT);
 
@@ -17,6 +17,7 @@ test('data embedded', () => {
   assert.ok(PROJECT.pins['55']);
   assert.ok(ROUTING.groups && ROUTING.pins && Array.isArray(ROUTING.general));
   assert.ok(DS_RU && Object.keys(DS_RU).length >= 100);
+  assert.ok(RATIONALE && Array.isArray(RATIONALE.overview) && RATIONALE.devices && RATIONALE.pins);
 });
 
 test('padXY: J1 strip above, J2 strip below, pin 1/2 at the right end, odd row on top', () => {

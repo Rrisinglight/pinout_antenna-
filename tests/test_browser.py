@@ -95,20 +95,56 @@ class TestPage(unittest.TestCase):
         self.assertIn("4 пина", self.page.locator("#panel h2").inner_text())
         self.assertGreaterEqual(self.page.locator("#routing li").count(), 1)
 
-    def test_keyboard(self):
+    def test_filter_clears_selection(self):
+        self.page.click('g.pad[data-n="77"]')
+        self.page.click('.seg button[data-layer="prj"]')
+        self.assertEqual(self.page.evaluate("PINOUT.state.sel"), 77)
+        self.page.click('#leg .lg[data-k="I2C"]')
+        self.assertIsNone(self.page.evaluate("PINOUT.state.sel"))
+        self.assertEqual(self.page.evaluate("PINOUT.state.filter"), "I2C")
+        self.assertFalse(self.page.evaluate("document.querySelector('g.pad[data-n=\"77\"]').classList.contains('sel')"))
+        self.assertIn("2 пина", self.page.locator("#panel h2").inner_text())
+
+    def test_select_clears_filter_and_toggle(self):
+        self.page.click('#leg .lg[data-k="PCIE"]')
+        self.page.click('g.pad[data-n="55"]')
+        self.assertEqual(self.page.evaluate("PINOUT.state.sel"), 55)
+        self.assertIsNone(self.page.evaluate("PINOUT.state.filter"))
+        self.assertEqual(self.visible_pads(), 200)
+        self.page.click('g.pad[data-n="55"]')
+        self.assertIsNone(self.page.evaluate("PINOUT.state.sel"))
+        self.assertFalse(self.page.evaluate("document.body.classList.contains('has-sel')"))
+
+    def test_no_keyboard(self):
+        self.assertEqual(self.page.locator("g.pad[tabindex]").count(), 0)
         self.page.click('g.pad[data-n="55"]')
         self.page.keyboard.press("ArrowRight")
-        self.assertEqual(self.page.evaluate("PINOUT.state.sel"), 53)
-        self.page.keyboard.press("ArrowLeft"); self.page.keyboard.press("ArrowLeft")
-        self.assertEqual(self.page.evaluate("PINOUT.state.sel"), 57)
-        self.page.keyboard.press("ArrowDown")
-        self.assertEqual(self.page.evaluate("PINOUT.state.sel"), 58)
-        self.page.keyboard.press("ArrowUp")
-        self.assertEqual(self.page.evaluate("PINOUT.state.sel"), 57)
         self.page.keyboard.press("Escape")
-        self.assertIsNone(self.page.evaluate("PINOUT.state.sel"))
-        self.page.focus('g.pad[data-n="3"]'); self.page.keyboard.press("Enter")
-        self.assertEqual(self.page.evaluate("PINOUT.state.sel"), 3)
+        self.assertEqual(self.page.evaluate("PINOUT.state.sel"), 55)
+        self.assertEqual(self.page.evaluate("[...document.querySelectorAll('g.pad.sel')].length"), 1)
+
+    def test_design_card(self):
+        self.assertFalse(self.page.locator("#design").is_visible())
+        self.page.click('.seg button[data-layer="prj"]')
+        self.assertTrue(self.page.locator("#design").is_visible())
+        self.assertIn("Design notes", self.page.locator("#design h3").inner_text())
+        self.page.click('g.pad[data-n="58"]')
+        self.assertIn("Design notes · pin 58", self.page.locator("#design").inner_text())
+        n = self.page.evaluate("(RATIONALE.devices.I2C || []).length + (RATIONALE.pins['58'] || []).length")
+        self.assertEqual(self.page.locator("#design li").count(), n)
+        self.page.click('#leg .lg[data-k="I2C"]')
+        self.assertIn("Design notes · I2C1", self.page.locator("#design h3").inner_text())
+        self.assertEqual(self.page.locator("#design li").count(), self.page.evaluate("(RATIONALE.devices.I2C || []).length"))
+        self.page.click('#leg .lg[data-k="I2C"]')
+        self.assertEqual(self.page.locator("#design li").count(), self.page.evaluate("RATIONALE.overview.length"))
+
+    def test_table_no_inner_scroll_and_thin_scrollbars(self):
+        self.assertEqual(self.page.evaluate("getComputedStyle(document.querySelector('.tbl-wrap')).maxHeight"), "none")
+        # overflow-x:auto stays (narrow screens), which makes a "visible" overflow-y compute to "auto" (CSS Overflow 3);
+        # assert the behaviour instead: the wrapper grows with its 200 rows, so it never scrolls vertically on its own
+        self.assertTrue(self.page.evaluate("(e => e.scrollHeight <= e.clientHeight)(document.querySelector('.tbl-wrap'))"))
+        css = self.page.evaluate("[...document.styleSheets[0].cssRules].map(r => r.cssText).join('\\n')")
+        self.assertIn("scrollbar-width: thin", css)
 
     def test_general_section(self):
         n = self.page.evaluate("ROUTING.general.length")
