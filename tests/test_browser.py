@@ -39,16 +39,19 @@ class TestPage(unittest.TestCase):
         self.assertEqual(self.page.locator("#board .ant").count(), 1)
         self.assertEqual(self.page.locator("#board .lead").count(), 0)
         self.assertEqual(self.page.evaluate("getComputedStyle(document.querySelector('.board-wrap')).borderTopStyle"), "none")
-        self.assertIn("Antenna keep-out", self.page.locator("#board").text_content())
+        self.assertIn("Зона без меди", self.page.locator("#board").text_content())
+        self.assertNotEqual(self.page.evaluate("getComputedStyle(document.querySelector('#outline')).fill"), self.page.evaluate("getComputedStyle(document.body).backgroundColor"))
         self.assertEqual(self.page.locator("#q").count(), 0)
         w = self.page.evaluate("(e=>[e.scrollWidth,e.clientWidth])(document.querySelector('.board-wrap'))")
         self.assertLessEqual(w[0], w[1])
 
-    def test_pin_panel_english(self):
+    def test_pin_panel(self):
         self.page.click('g.pad[data-n="55"]')
         text = self.page.locator("#panel").inner_text()
-        for s in ("GPIO14", "J1", "odd (top) row", "Group", "Direction", "bidirectional", "Datasheet", "boot pull-down"):
+        for s in ("GPIO14", "J1", "нечётный", "Group", "Direction", "bidirectional", "Datasheet", "при загрузке pull-down"):
             self.assertIn(s, text)
+        self.assertRegex(self.page.locator("#panel .dsq").inner_text(), "[А-Яа-я]")
+        self.assertIn("GPIO: typically a 3.3V signal", self.page.locator("#panel .dsq-en").inner_text())
         self.assertNotIn("UART0_TXD", text)
         self.assertIn("TXD0", self.page.locator("#panel table.alt").inner_text())
         self.assertTrue(self.page.evaluate("document.body.classList.contains('has-sel')"))
@@ -57,13 +60,13 @@ class TestPage(unittest.TestCase):
         self.page.click('.seg button[data-layer="prj"]')
         self.page.click('g.pad[data-n="116"]')
         text = self.page.locator("#panel").inner_text()
-        for s in ("PCIE_RX_P", "PCIe → M.2 NVMe", "PERp0", "Differential pair", "118", "90 Ω"):
+        for s in ("PCIE_RX_P", "PCIe → M.2 NVMe", "PERp0", "Differential pair", "118", "90 Ом"):
             self.assertIn(s, text)
         self.assertTrue(self.page.evaluate("document.querySelector('g.pad[data-n=\"118\"]').classList.contains('mate')"))
         rt = self.page.locator("#routing").inner_text()
         self.assertIn("Routing notes · pin 116", rt)
         self.assertGreaterEqual(self.page.locator("#routing li").count(), 7)
-        self.assertIn("PERp0", rt); self.assertIn("90 Ω", rt)
+        self.assertIn("PERp0", rt); self.assertIn("90 Ом", rt)
         self.page.click('g.pad[data-n="76"]')
         self.assertTrue(self.page.evaluate("document.querySelector('g.pad[data-n=\"76\"]').classList.contains('dnc')"))
         self.assertIn("do not connect", self.page.locator("#panel").inner_text())
@@ -73,12 +76,12 @@ class TestPage(unittest.TestCase):
         rt = self.page.locator("#routing").inner_text()
         self.assertIn("Routing notes · pin 1", rt)
         self.assertEqual(self.page.locator("#routing li").count(), 1)
-        self.assertIn("ground pin", rt)
+        self.assertIn("GND", rt); self.assertRegex(rt, "[А-Яа-я]")
 
     def test_legend_filter_and_summary(self):
         self.page.click('#leg .lg[data-k="PCIE"]')
         self.assertEqual(self.visible_pads(), 8)
-        self.assertIn("8 pins", self.page.locator("#panel").inner_text())
+        self.assertIn("8 пинов", self.page.locator("#panel").inner_text())
         self.assertIn("Routing notes", self.page.locator("#routing").inner_text())
         self.assertEqual(self.page.locator("#routing li").count(), self.page.evaluate("ROUTING.groups.PCIE.length"))
         self.page.click('#leg .lg[data-k="PCIE"]')

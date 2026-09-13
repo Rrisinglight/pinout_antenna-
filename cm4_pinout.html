@@ -45,8 +45,8 @@ h1{margin:0;font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:600;letter-spacing
 .pad.opt rect{stroke:var(--fg2);stroke-dasharray:2 2}
 .pad.sel rect{stroke:var(--sel);stroke-width:3}
 .lbl{font-family:var(--font);font-size:11px;fill:var(--fg2)}.lbl.b{fill:var(--fg);font-weight:600}.lbl.s{font-size:9px}
-#outline{fill:var(--bg);stroke:var(--bd2);stroke-width:1.5}
-.hole{fill:var(--bg2);stroke:var(--bd2)}
+#outline{fill:var(--bg2);stroke:var(--bd2);stroke-width:1.5}
+.hole{fill:var(--bg);stroke:var(--bd2)}
 .conn{fill:var(--bg3);stroke:var(--bd2)}
 .pin1{fill:var(--fg)}
 .soc{fill:var(--bg3);stroke:var(--bd3)}
@@ -66,6 +66,7 @@ h1{margin:0;font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:600;letter-spacing
 .chip{display:inline-block;padding:1px 7px;border-radius:10px;color:#fff;font-size:11px;font-weight:500}
 .dsq{margin:6px 0;padding:8px 10px;border-left:3px solid var(--bd3);background:var(--bg);font-size:12px;color:var(--fg2)}
 .dsq b{color:var(--fg)}
+.dsq-en{margin-top:4px;font-size:11px;opacity:.75}
 .alt{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px}
 .alt th,.alt td{border:1px solid var(--bd3);padding:2px 5px;text-align:left;font-family:var(--mono)}
 .alt th{font-family:var(--font);color:var(--fg2);font-weight:500}
@@ -122,8 +123,8 @@ dialog textarea{width:100%;height:50vh;font-family:var(--mono);font-size:11px}
       </section>
     </div>
     <aside class="side">
-      <div class="card" id="panel" aria-live="polite"><div class="ph">Click a pin.</div></div>
-      <div class="card" id="routing"><h3>Routing notes</h3><div class="ph">Select a pin or a legend entry.</div></div>
+      <div class="card" id="panel" aria-live="polite"><div class="ph">Нажмите на пин.</div></div>
+      <div class="card" id="routing"><h3>Routing notes</h3><div class="ph">Выберите пин или элемент легенды.</div></div>
     </aside>
   </div>
 </div>
@@ -257,15 +258,15 @@ var LIB = (function () {
     board.appendChild(svg('rect', {class: 'ant', x: a.x, y: a.y, width: 6.5 * s, height: 11 * s}));
     var u = LIB.mm(2.567, 9);
     board.appendChild(svg('circle', {class: 'ufl', cx: u.x, cy: u.y, r: 1.2 * s}));
-    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 11}, 'Antenna keep-out 6.5 × 11 mm:'));
-    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 23}, 'no copper on any baseboard layer'));
-    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 35}, 'under this area; U.FL above it.'));
+    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 11}, 'Зона без меди 6.5 × 11 мм:'));
+    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 23}, 'под этой областью ни на одном'));
+    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 35}, 'слое baseboard нет меди; U.FL выше.'));
     // strip labels and caption
-    [[500, 24, 'middle', 'J1 · pins 1–100 · odd numbers in the top row', true],
+    [[500, 24, 'middle', 'J1 · пины 1–100 · нечётные номера в верхнем ряду', true],
      [958, 24, 'end', '1 / 2', false], [60, 24, 'start', '99 / 100', false],
-     [500, 534, 'middle', 'J2 · pins 101–200 · odd numbers in the top row', true],
+     [500, 534, 'middle', 'J2 · пины 101–200 · нечётные номера в верхнем ряду', true],
      [958, 534, 'end', '101 / 102', false], [60, 534, 'start', '199 / 200', false],
-     [500, 552, 'middle', 'CM4 viewed from the top, to scale (datasheet Fig. 4). Connectors are on the underside; pin 1 is at the right end of each connector.', false]
+     [500, 552, 'middle', 'CM4, вид сверху, в масштабе (Fig. 4 даташита). Разъёмы на нижней стороне; пин 1 — у правого края каждого разъёма.', false]
     ].forEach(function (l) {
       board.appendChild(svg('text', {class: 'lbl' + (l[4] ? ' b' : ''), x: l[0], y: l[1], 'text-anchor': l[2]}, l[3]));
     });
@@ -332,7 +333,7 @@ var LIB = (function () {
       r.appendChild(h('td', 'mono prj c-mode', o.mode));
       r.appendChild(h('td', 'prj c-status', LIB.STATUS[o.status] || o.status));
       r.appendChild(h('td', 'txt prj c-note', o.note));
-      r.appendChild(h('td', 'mono', p.pair ? p.pair.partner + ' · ' + p.pair.z + ' Ω' : ''));
+      r.appendChild(h('td', 'mono', p.pair ? p.pair.partner + ' · ' + p.pair.z + ' Ом' : ''));
       r.appendChild(h('td', 'txt', p.ds));
       r.addEventListener('click', function () { select(p.n); });
       tbody.appendChild(r);
@@ -384,7 +385,7 @@ var LIB = (function () {
     var frag = document.createDocumentFragment();
     frag.appendChild(h('h3', null, title || 'Routing notes'));
     if (!items || !items.length) {
-      frag.appendChild(h('div', 'ph', empty || 'No pin-specific routing constraint. See Layout notes below the board.'));
+      frag.appendChild(h('div', 'ph', empty || 'Особых требований к трассировке для этого пина нет — см. Layout notes под схемой.'));
     } else {
       var ul = h('ul'); items.forEach(function (t) { ul.appendChild(noteLi(t)); }); frag.appendChild(ul);
     }
@@ -395,7 +396,7 @@ var LIB = (function () {
     if (state.sel == null) {
       if (state.filter) {
         var list = pins.filter(function (p) { return LIB.chipKey(p, ov(p), state.layer) === state.filter; });
-        var h2f = h('h2', null, chipName(state.filter) + ' · ' + list.length + ' pins');
+        var h2f = h('h2', null, chipName(state.filter) + ' · ' + list.length + ' пинов');
         h2f.appendChild(closeBtn(function () { setFilter(null); }));
         frag.appendChild(h2f);
         var ul = h('ul', 'plain');
@@ -413,9 +414,9 @@ var LIB = (function () {
         });
         renderRouting(grpItems, 'Routing notes · ' + chipName(state.filter));
       } else {
-        frag.appendChild(h('div', 'ph', 'Click a pin.'));
+        frag.appendChild(h('div', 'ph', 'Нажмите на пин.'));
         panel.replaceChildren(frag);
-        renderRouting([], 'Routing notes', 'Select a pin or a legend entry.');
+        renderRouting([], 'Routing notes', 'Выберите пин или элемент легенды.');
       }
       return;
     }
@@ -423,7 +424,7 @@ var LIB = (function () {
     var h2 = h('h2');
     var pn = h('span', 'pn', String(p.n)); pn.style.background = col; h2.appendChild(pn);
     h2.appendChild(document.createTextNode(p.sig + ' '));
-    h2.appendChild(h('span', 'muted', p.conn + ' · ' + (p.row === 'odd' ? 'odd (top) row' : 'even (bottom) row')));
+    h2.appendChild(h('span', 'muted', p.conn + ' · ' + (p.row === 'odd' ? 'нечётный (верхний) ряд' : 'чётный (нижний) ряд')));
     h2.appendChild(closeBtn(function () { select(null); }));
     frag.appendChild(h2);
     if (state.layer === 'prj') {
@@ -440,16 +441,19 @@ var LIB = (function () {
     kv(dl2, 'Direction', LIB.DIRS[p.dir] || p.dir);
     if (p.gpio != null) {
       var a = ALT[String(p.gpio)];
-      kv(dl2, 'BCM2711', 'GPIO' + p.gpio + (a ? ' · boot pull-' + (a.pull === 'High' ? 'up' : 'down') : ''));
+      kv(dl2, 'BCM2711', 'GPIO' + p.gpio + (a ? ' · при загрузке pull-' + (a.pull === 'High' ? 'up' : 'down') : ''));
     }
     if (p.pair) {
       var q = byN[p.pair.partner], span = h('span');
       span.appendChild(pinBtn(q.n));
-      span.appendChild(document.createTextNode(' ' + q.sig + ' · ' + p.pair.z + ' Ω · CM4 trace skew ' + p.pair.skew + ' / ' + q.pair.skew + ' mm'));
+      span.appendChild(document.createTextNode(' ' + q.sig + ' · ' + p.pair.z + ' Ом · разбег дорожек на CM4 ' + p.pair.skew + ' / ' + q.pair.skew + ' мм'));
       kv(dl2, 'Differential pair', span);
     }
     frag.appendChild(dl2);
-    var dq = h('div', 'dsq'); dq.appendChild(h('b', null, 'Datasheet: ')); dq.appendChild(document.createTextNode(p.ds)); frag.appendChild(dq);
+    var dq = h('div', 'dsq'), ru = DS_RU[p.ds];
+    dq.appendChild(h('b', null, 'Datasheet: ')); dq.appendChild(document.createTextNode(ru || p.ds));
+    if (ru) dq.appendChild(h('div', 'dsq-en', p.ds));
+    frag.appendChild(dq);
     if (p.gpio != null && ALT[String(p.gpio)]) frag.appendChild(altTable(p.gpio, state.layer === 'prj' ? o.mode : ''));
     panel.replaceChildren(frag);
     renderRouting(LIB.routingFor(p, ROUTING), 'Routing notes · pin ' + p.n);
@@ -483,7 +487,7 @@ var LIB = (function () {
         r.querySelector('.sw').style.background = LIB.colorOf(p, o, state.layer, PROJECT);
       }
     });
-    var cnt = $('#cnt'); if (cnt) cnt.textContent = 'Showing ' + shown + ' of 200 pins';
+    var cnt = $('#cnt'); if (cnt) cnt.textContent = 'Показано ' + shown + ' из 200 пинов';
     leg.querySelectorAll('.lg').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.k === state.filter)); });
     document.querySelectorAll('.seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.layer === state.layer)); });
     renderPanel();

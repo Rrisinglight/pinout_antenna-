@@ -8,7 +8,7 @@ const grab = (a, b) => html.slice(html.indexOf(a) + a.length, html.indexOf(b));
 const ctx = vm.createContext({});
 vm.runInContext(grab('/*DATA-START*/', '/*DATA-END*/'), ctx);
 vm.runInContext(grab('/*LIB-START*/', '/*LIB-END*/'), ctx);
-const { LIB, DATA, PROJECT, ROUTING } = ctx;
+const { LIB, DATA, PROJECT, ROUTING, DS_RU } = ctx;
 const byN = Object.fromEntries(DATA.pins.map(p => [p.n, p]));
 const ov = n => LIB.merge(byN[n], PROJECT);
 
@@ -16,6 +16,7 @@ test('data embedded', () => {
   assert.equal(DATA.pins.length, 200);
   assert.ok(PROJECT.pins['55']);
   assert.ok(ROUTING.groups && ROUTING.pins && Array.isArray(ROUTING.general));
+  assert.ok(DS_RU && Object.keys(DS_RU).length >= 100);
 });
 
 test('padXY: J1 strip above, J2 strip below, pin 1/2 at the right end, odd row on top', () => {
@@ -54,6 +55,6 @@ test('csv: English header with ds column, 200 rows', () => {
   const lines = LIB.csv(DATA.pins, PROJECT).split('\n');
   assert.equal(lines.length, 201);
   assert.equal(lines[0], 'pin;connector;row;signal;group;direction;net;device;mode;status;pair;note;datasheet');
-  assert.match(lines[55], /^55;J1;odd;GPIO14;GPIO;bidir;UART0_TXD;CONSOLE;ALT0 TXD0;used;;"Service console/);
+  assert.match(lines[55], /^55;J1;odd;GPIO14;GPIO;bidir;UART0_TXD;CONSOLE;ALT0 TXD0;used;;/);
   assert.match(lines[116], /^116;J2;even;PCIe_RX_P;PCIE;in;PCIE_RX_P;PCIE;;used;118;/);
 });
