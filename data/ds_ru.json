@@ -4,7 +4,7 @@
  "1.8V ± 2.5%. Power Output max 300mA per pin for a total of 600mA. This will be powered down during power-off or GLOBAL_EN being set low": "1.8 В ± 2.5 %. Выход питания: не более 300 мА на вывод, 600 мА суммарно. Отключается при снятии питания или при низком уровне GLOBAL_EN",
  "3.3V ± 2.5%. Power Output max 300mA per pin for a total of 600mA. This will be powered down during power-off or GLOBAL_EN being set low": "3.3 В ± 2.5 %. Выход питания: не более 300 мА на вывод, 600 мА суммарно. Отключается при снятии питания или при низком уровне GLOBAL_EN",
  "4.75V-5.25V. Main power input": "4.75–5.25 В. Основной вход питания",
- "A low on this pin forces booting from an RPI server (e.g. PC or a Raspberry Pi); if not used leave floating. Internally pulled up via 10kΩ to +3.3V": "Низкий уровень на этом выводе принудительно включает загрузку с RPI-сервера (например, ПК или Raspberry Pi); если не используется — оставьте неподключённым. Внутренняя подтяжка к питанию (pull-up) 10 кОм на +3.3V",
+ "A low on this pin forces booting from an RPI server (e.g. PC or a Raspberry Pi); if not used leave floating. Internally pulled up via 10kΩ to +3.3V": "Низкий уровень на этом выводе принудительно включает загрузку с хоста rpiboot (например, ПК или Raspberry Pi); если не используется — оставьте неподключённым. Внутренняя подтяжка к питанию (pull-up) 10 кОм на +3.3V",
  "Active-low Ethernet activity indicator (CM4_3.3V signal): typically a green LED is connected to this pin. IOL = 8mA @ VOL< 0.4V": "Индикатор активности Ethernet, активный низкий уровень (сигнал CM4_3.3V): обычно к этому выводу подключён зелёный светодиод. IOL = 8 мА при VOL < 0.4 В",
  "Active-low Ethernet speed indicator (CM4_3.3V signal): typically a yellow LED is connected to this pin. A low state indicates the 1Gbit or 100Mbit link: IOL = 8mA @ VOL < 0.4V": "Индикатор скорости Ethernet, активный низкий уровень (сигнал CM4_3.3V): обычно к этому выводу подключён жёлтый светодиод. Низкий уровень означает соединение 1 Гбит или 100 Мбит: IOL = 8 мА при VOL < 0.4 В",
  "Active-low Ethernet speed indicator (CM4_3.3V signal): typically a yellow LED is connected to this pin. A low state indicates the 1Gbit or 10Mbit link: IOL = 8mA @ VOL < 0.4V": "Индикатор скорости Ethernet, активный низкий уровень (сигнал CM4_3.3V): обычно к этому выводу подключён жёлтый светодиод. Низкий уровень означает соединение 1 Гбит или 10 Мбит: IOL = 8 мА при VOL < 0.4 В",
@@ -111,7 +111,7 @@
  "SD card/eMMC Data6 signal (only available on CM4Lite)": "Сигнал Data6 SD-карты/eMMC (только на CM4Lite)",
  "SD card/eMMC Data7 signal (only available on CM4Lite)": "Сигнал Data7 SD-карты/eMMC (только на CM4Lite)",
  "Typically used to shut down the camera to reduce power. Reassigning this pin to another function isn’t recommended. CM4_3.3V signalling": "Обычно используется для выключения камеры ради экономии энергии. Переназначать этот вывод на другую функцию не рекомендуется. Уровни сигнала CM4_3.3V",
- "USB": "USB (линия D+)",
+ "USB": "Шина USB",
  "USB D-": "USB, линия D-",
  "Video DAC output (TV OUT)": "Выход видео-ЦАП (TV OUT)"
 }

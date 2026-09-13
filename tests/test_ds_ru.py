@@ -16,7 +16,7 @@ class TestDsRu(unittest.TestCase):
             self.assertTrue(tr.strip(), en)
             self.assertIsNotNone(CYR.search(tr), f"not Russian: {en[:40]}")
             self.assertLessEqual(len(tr), 2 * len(en) + 60, f"too long: {en[:40]}")
-            for token in re.findall(r"\b\d+(?:\.\d+)?\b", en):   # every number of the original must survive
+            for token in re.findall(r"(?<![\w.])\d+(?:\.\d+)?", en):   # every number of the original must survive
                 self.assertIn(token, tr, f"number {token} lost in: {en[:50]}")
 
 
