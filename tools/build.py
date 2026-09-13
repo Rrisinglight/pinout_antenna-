@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Вшивает data/cm4_datasheet.json и data/project.json в cm4_pinout.html между /*DATA-START*/ и /*DATA-END*/.
-Запуск из корня репо: python3 tools/build.py
+"""Embeds data/cm4_datasheet.json and data/project.json into cm4_pinout.html between /*DATA-START*/ and /*DATA-END*/.
+Run from the repo root: python3 tools/build.py
 """
 import json
 import re
@@ -12,7 +12,7 @@ MARK = re.compile(r"/\*DATA-START\*/.*?/\*DATA-END\*/", re.S)
 
 
 def dumps(obj):
-    # "</" не должно встретиться внутри <script>; на всякий случай экранируем
+    # "</" must not appear inside <script>; escape it just in case
     return json.dumps(obj, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 

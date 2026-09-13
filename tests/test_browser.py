@@ -61,28 +61,31 @@ class TestPage(unittest.TestCase):
         self.assertTrue(self.page.evaluate("document.querySelector('g.pad[data-n=\"118\"]').classList.contains('mate')"))
         rt = self.page.locator("#routing").inner_text()
         self.assertIn("Routing notes · pin 116", rt)
-        n_items = self.page.locator("#routing li").count()
-        self.assertTrue(n_items >= 1 or "No pin-specific" in rt)   # placeholder routing.json until Task 4; Task 5 checks real content
+        self.assertGreaterEqual(self.page.locator("#routing li").count(), 7)
+        self.assertIn("PERp0", rt); self.assertIn("90 Ω", rt)
         self.page.click('g.pad[data-n="76"]')
         self.assertTrue(self.page.evaluate("document.querySelector('g.pad[data-n=\"76\"]').classList.contains('dnc')"))
         self.assertIn("do not connect", self.page.locator("#panel").inner_text())
 
-    def test_routing_card_empty_pin(self):
+    def test_routing_card_gnd_pin(self):
         self.page.click('g.pad[data-n="1"]')
         rt = self.page.locator("#routing").inner_text()
-        self.assertTrue("Routing notes" in rt)
-        self.assertTrue(self.page.locator("#routing li").count() >= 1 or "No pin-specific" in rt)
+        self.assertIn("Routing notes · pin 1", rt)
+        self.assertEqual(self.page.locator("#routing li").count(), 1)
+        self.assertIn("ground pin", rt)
 
     def test_legend_filter_and_summary(self):
         self.page.click('#leg .lg[data-k="PCIE"]')
         self.assertEqual(self.visible_pads(), 8)
         self.assertIn("8 pins", self.page.locator("#panel").inner_text())
         self.assertIn("Routing notes", self.page.locator("#routing").inner_text())
+        self.assertEqual(self.page.locator("#routing li").count(), self.page.evaluate("ROUTING.groups.PCIE.length"))
         self.page.click('#leg .lg[data-k="PCIE"]')
         self.assertEqual(self.visible_pads(), 200)
         self.page.click('.seg button[data-layer="prj"]')
         self.page.click('#leg .lg[data-k="VDEC"]')
         self.assertEqual(self.visible_pads(), 4)   # 115/117/127/129; the six unused CSI1 lanes are status nc → "Not used"
+        self.assertGreaterEqual(self.page.locator("#routing li").count(), 1)
 
     def test_keyboard(self):
         self.page.click('g.pad[data-n="55"]')

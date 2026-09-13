@@ -238,7 +238,7 @@ var LIB = (function () {
     var cL = LIB.mm(14, 0).x, cR = LIB.mm(36, 0).x;
     var j1 = LIB.mm(0, 3).y, j2 = LIB.mm(0, 37).y;
     board.appendChild(svg('polygon', {class: 'lead', points: [60, 70, 958, 70, cR, j1 - 1.5 * s, cL, j1 - 1.5 * s].join(',')}));
-    board.appendChild(svg('polygon', {class: 'lead', points: [cL, j2 + 1.5 * s, cR, j2 + 1.5 * s, 958, 478, 60, 478].join(',')}));
+    board.appendChild(svg('polygon', {class: 'lead', points: [cL, j2 + 1.5 * s, cR, j2 + 1.5 * s, 958, 484, 60, 484].join(',')}));
     // outline 55×40 mm, corner radius 2 mm
     board.appendChild(svg('rect', {id: 'outline', x: o.x, y: o.y, width: 55 * s, height: 40 * s, rx: 2 * s}));
     [[3.5, 3.5], [51.5, 3.5], [3.5, 36.5], [51.5, 36.5]].forEach(function (c) {
@@ -383,11 +383,11 @@ var LIB = (function () {
     t.appendChild(tr1); t.appendChild(tr2);
     return t;
   }
-  function renderRouting(items, title) {
+  function renderRouting(items, title, empty) {
     var frag = document.createDocumentFragment();
     frag.appendChild(h('h3', null, title || 'Routing notes'));
     if (!items || !items.length) {
-      frag.appendChild(h('div', 'ph', 'No pin-specific routing constraint. See Layout notes below the board.'));
+      frag.appendChild(h('div', 'ph', empty || 'No pin-specific routing constraint. See Layout notes below the board.'));
     } else {
       var ul = h('ul'); items.forEach(function (t) { ul.appendChild(noteLi(t)); }); frag.appendChild(ul);
     }
@@ -410,13 +410,15 @@ var LIB = (function () {
         });
         frag.appendChild(ul);
         panel.replaceChildren(frag);
-        var grpItems = state.layer === 'ds' ? (ROUTING.groups[state.filter] || []) : [];
+        var grpItems = [], seen = {};
+        list.forEach(function (p) {
+          (ROUTING.groups[p.grp] || []).forEach(function (t) { if (!seen[t]) { seen[t] = true; grpItems.push(t); } });
+        });
         renderRouting(grpItems, 'Routing notes · ' + chipName(state.filter));
       } else {
         frag.appendChild(h('div', 'ph', 'Click a pin.'));
         panel.replaceChildren(frag);
-        renderRouting([], 'Routing notes');
-        routing.querySelector('.ph').textContent = 'Select a pin or a legend entry.';
+        renderRouting([], 'Routing notes', 'Select a pin or a legend entry.');
       }
       return;
     }
@@ -497,7 +499,7 @@ var LIB = (function () {
     b.addEventListener('click', function () { setLayer(b.dataset.layer); });
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { state.sel = null; state.filter = null; apply(); return; }
+    if (e.key === 'Escape') { if ($('#csvdlg').open) return; state.sel = null; state.filter = null; apply(); return; }
     if ((e.target.closest && e.target.closest('input,textarea')) || state.sel == null) return;
     var n = state.sel, lo = n <= 100 ? 1 : 101, hi = lo + 99, next = null;
     if (e.key === 'ArrowLeft') next = n + 2;
