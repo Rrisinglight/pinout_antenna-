@@ -30,7 +30,7 @@ test('padXY: пин 1/2 справа, 99/100 слева, нечётный ряд
 test('merge: явная запись, default по группе, свободный', () => {
   assert.equal(ov(55).net, 'UART0_TXD');
   assert.equal(ov(55).status, 'used');
-  assert.equal(ov(55).devName, 'Консоль UART0');
+  assert.equal(ov(55).devName, 'Service console · UART0');
   assert.equal(ov(1).net, 'GND');
   assert.equal(ov(76).status, 'dnc');
   assert.equal(ov(24).net, 'FAN_TACH');
@@ -59,8 +59,8 @@ test('matches: номер, GPIO, сигнал, цепь, шина, устрой�
   assert.equal(m(37, 'uart3'), true);
   assert.equal(m(55, 'uart3'), false);
   assert.equal(m(54, 'crsf'), true);
-  assert.equal(m(54, 'консоль'), false);
-  assert.equal(m(55, 'консоль'), true);
+  assert.equal(m(54, 'console'), false);
+  assert.equal(m(55, 'console'), true);
   assert.equal(m(116, 'pcie_rx'), true);
   assert.equal(m(1, ''), true);
   assert.equal(m(1, '   '), true);
@@ -81,7 +81,7 @@ test('csv: заголовок, 200 строк, экранирование', () =
   const lines = LIB.csv(DATA.pins, PROJECT).split('\n');
   assert.equal(lines.length, 201);
   assert.equal(lines[0], 'pin;conn;row;signal;group;dir;net;device;mode;status;pair;note;ds');
-  assert.match(lines[55], /^55;J1;odd;GPIO14;GPIO;bidir;UART0_TXD;CONSOLE;ALT0 TXD0;used;;Сервисная консоль/);
+  assert.match(lines[55], /^55;J1;odd;GPIO14;GPIO;bidir;UART0_TXD;CONSOLE;ALT0 TXD0;used;;"Service console/);
   assert.match(lines[116], /^116;J2;even;PCIe_RX_P;PCIE;in;PCIE_RX_P;PCIE;;used;118;/);
   assert.equal(LIB.csv([{ n: 1, conn: 'J1', row: 'odd', sig: 'X', grp: 'ZZZ', dir: 'in' }], PROJECT).split('\n')[1], '1;J1;odd;X;ZZZ;in;;NC;;free;;;');
   const esc = LIB.csv([{ n: 1, conn: 'J1', row: 'odd', sig: 'a;b', grp: 'ZZZ', dir: 'in' }], PROJECT).split('\n')[1];

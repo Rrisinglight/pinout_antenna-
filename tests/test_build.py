@@ -11,12 +11,13 @@ class TestBuild(unittest.TestCase):
         first = HTML.read_text(encoding="utf-8")
         subprocess.run([sys.executable, str(ROOT / "tools" / "build.py")], check=True, capture_output=True)
         self.assertEqual(first, HTML.read_text(encoding="utf-8"))
-        m = re.search(r"/\*DATA-START\*/\nvar DATA = (.*?);\nvar PROJECT = (.*?);\n/\*DATA-END\*/", first, re.S)
+        m = re.search(r"/\*DATA-START\*/\nvar DATA = (.*?);\nvar PROJECT = (.*?);\nvar ROUTING = (.*?);\n/\*DATA-END\*/", first, re.S)
         self.assertIsNotNone(m)
         data = json.loads(m.group(1).replace("<\\/", "</"))
         prj = json.loads(m.group(2).replace("<\\/", "</"))
         self.assertEqual(data, json.loads((ROOT / "data" / "cm4_datasheet.json").read_text(encoding="utf-8")))
         self.assertEqual(prj, json.loads((ROOT / "data" / "project.json").read_text(encoding="utf-8")))
+        self.assertEqual(json.loads(m.group(3).replace("<\\/", "</")), json.loads((ROOT / "data" / "routing.json").read_text(encoding="utf-8")))
         self.assertEqual(first.count("/*DATA-START*/"), 1)
 
     def test_self_contained(self):

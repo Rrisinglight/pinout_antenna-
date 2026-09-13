@@ -50,7 +50,7 @@ class TestPage(unittest.TestCase):
         self.page.click('.seg button[data-layer="prj"]')
         text = self.page.locator("#panel").inner_text()
         self.assertIn("UART0_TXD", text)
-        self.assertIn("Консоль UART0", text)
+        self.assertIn("Service console · UART0", text)
         self.assertIn("ALT0 TXD0", text)
         self.assertTrue(self.page.evaluate("document.body.classList.contains('layer-prj')"))
         self.assertEqual(self.page.evaluate("document.querySelector('#panel table.alt td.on').textContent"), "TXD0")
@@ -146,12 +146,6 @@ class TestPage(unittest.TestCase):
         self.assertEqual(len(text.split("\n")), 201)
         self.assertTrue(text.startswith("pin;conn;row;signal"))
         self.assertTrue(text.split("\n")[0].endswith(";ds"))
-
-    def test_facts(self):
-        n = self.page.evaluate("PROJECT.facts.length")
-        self.assertEqual(self.page.locator("#facts li").count(), n)
-        self.assertGreaterEqual(n, 12)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -3,6 +3,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STATUSES = {"used", "opt", "free", "nc", "dnc"}
+CYR = re.compile(r"[Ѐ-ӿ]")
 
 
 class TestProject(unittest.TestCase):
@@ -18,31 +19,33 @@ class TestProject(unittest.TestCase):
         return {"net": e.get("net", ""), "dev": e.get("dev", "NC"), "mode": e.get("mode", ""),
                 "status": e.get("status", "used" if str(n) in self.prj["pins"] else "free"), "note": e.get("note", "")}
 
-    def test_shape(self):
-        for key in ("meta", "devices", "defaults", "pins", "ds_notes", "facts"):
+    def test_shape_v2(self):
+        for key in ("meta", "devices", "defaults", "pins"):
             self.assertIn(key, self.prj)
+        for key in ("ds_notes", "facts"):
+            self.assertNotIn(key, self.prj)
         for k, d in self.prj["devices"].items():
             self.assertTrue(d["name"] and re.fullmatch(r"#[0-9A-Fa-f]{6}", d["c"]), k)
         self.assertIn("NC", self.prj["devices"])
-        self.assertTrue(all(isinstance(f, str) and f for f in self.prj["facts"]))
-        self.assertGreaterEqual(len(self.prj["facts"]), 12)
+        self.assertIn("VDEC", self.prj["devices"])
+
+    def test_english_only(self):
+        blob = json.dumps(self.prj, ensure_ascii=False)
+        self.assertIsNone(CYR.search(blob), "Cyrillic text left in project.json")
 
     def test_pins_reference_existing(self):
         for k, e in self.prj["pins"].items():
             self.assertIn(int(k), self.pins, k)
             self.assertIn(e["dev"], self.prj["devices"], k)
             self.assertIn(e.get("status", "used"), STATUSES, k)
-            self.assertTrue(e.get("note"), f"пин {k} без примечания")
+            self.assertTrue(e.get("note"), f"pin {k} has no note")
         for grp, e in self.prj["defaults"].items():
             self.assertIn(e["dev"], self.prj["devices"], grp)
             self.assertIn(e["status"], STATUSES, grp)
-        for grp in self.prj["ds_notes"]:
-            self.assertTrue(any(p["grp"] == grp for p in self.ds["pins"]), grp)
 
     def test_every_pin_resolves(self):
         for n in range(1, 201):
-            e = self.entry(n)
-            self.assertNotEqual(e["status"], "free", f"пин {n} ({self.pins[n]['sig']}) не описан")
+            self.assertNotEqual(self.entry(n)["status"], "free", f"pin {n} ({self.pins[n]['sig']}) not described")
 
     def test_gpio_used_once_and_modes_match_alt(self):
         seen = {}
@@ -50,14 +53,14 @@ class TestProject(unittest.TestCase):
             if p["grp"] != "GPIO":
                 continue
             e = self.prj["pins"].get(str(n))
-            self.assertIsNotNone(e, f"GPIO{p['gpio']} (пин {n}) не назначен")
+            self.assertIsNotNone(e, f"GPIO{p['gpio']} (pin {n}) unassigned")
             self.assertNotIn(p["gpio"], seen)
             seen[p["gpio"]] = n
             m = re.fullmatch(r"ALT(\d) (.+)", e["mode"])
             if m:
-                self.assertEqual(self.ds["alt"][str(p["gpio"])]["alt"][int(m.group(1))], m.group(2), f"пин {n}")
+                self.assertEqual(self.ds["alt"][str(p["gpio"])]["alt"][int(m.group(1))], m.group(2), f"pin {n}")
             else:
-                self.assertEqual(e["mode"], "GPIO", f"пин {n}")
+                self.assertEqual(e["mode"], "GPIO", f"pin {n}")
         self.assertEqual(sorted(seen), list(range(28)))
 
     def test_nets_unique_outside_power(self):
@@ -66,8 +69,20 @@ class TestProject(unittest.TestCase):
             e = self.entry(n)
             if not e["net"] or self.pins[n]["grp"] in ("GND", "PWR5", "PWR33"):
                 continue
-            self.assertNotIn(e["net"], nets, f"цепь {e['net']}: пины {nets.get(e['net'])} и {n}")
+            self.assertNotIn(e["net"], nets, f"net {e['net']}: pins {nets.get(e['net'])} and {n}")
             nets[e["net"]] = n
+
+    def test_diff_pair_polarity_and_modes(self):
+        for n, e in self.prj["pins"].items():
+            p = self.pins[int(n)]
+            m = re.search(r"_([PN])$", e.get("net", ""))
+            if m and "pair" in p:
+                self.assertTrue(p["sig"].endswith("_" + m.group(1)), f"pin {n}: {e['net']} vs {p['sig']}")
+        modes = {36: "ALT4 TXD2", 35: "ALT4 RXD2", 58: "ALT0 SDA1", 56: "ALT0 SCL1", 54: "ALT4 TXD3", 34: "ALT4 RXD3",
+                 37: "ALT4 RTS3", 39: "ALT4 TXD4", 40: "ALT4 RXD4", 38: "ALT4 RTS4", 31: "ALT4 TXD5", 28: "ALT4 RXD5",
+                 55: "ALT0 TXD0", 51: "ALT0 RXD0", 49: "ALT5 PWM0_0", 27: "ALT3 SPI6_MOSI", 25: "ALT3 SPI6_SCLK"}
+        for n, mode in modes.items():
+            self.assertEqual(self.prj["pins"][str(n)]["mode"], mode, f"pin {n}")
 
     def test_approved_allocation(self):
         expect = {36: "UART2_TXD", 35: "UART2_RXD", 58: "I2C1_SDA", 56: "I2C1_SCL", 54: "UART3_TXD", 34: "UART3_RXD",
@@ -75,29 +90,21 @@ class TestProject(unittest.TestCase):
                   31: "UART5_TXD", 28: "UART5_RXD", 55: "UART0_TXD", 51: "UART0_RXD", 29: "CRSF2_INV", 50: "TX1_PWR_EN",
                   49: "FAN_PWM", 26: "TX2_PWR_EN", 27: "VRX_DATA", 25: "VRX_CLK", 46: "VRX_LE1", 47: "VRX_LE2",
                   45: "VRX_LE3", 41: "VRX_LE4", 24: "FAN_TACH", 48: "CRSF1_INV",
-                  99: "GLOBAL_EN", 92: "RUN_PG", 93: "nRPIBOOT", 78: "CM4_3V3", 102: "PCIE_CLKREQ_N", 116: "PCIE_RX_P"}
+                  99: "GLOBAL_EN", 92: "RUN_PG", 93: "nRPIBOOT", 78: "CM4_3V3", 102: "PCIE_CLKREQ_N", 116: "PCIE_RX_P",
+                  115: "CSI1_D0_N", 117: "CSI1_D0_P", 127: "CSI1_CLK_N", 129: "CSI1_CLK_P"}
         for n, net in expect.items():
-            self.assertEqual(self.entry(n)["net"], net, f"пин {n}")
+            self.assertEqual(self.entry(n)["net"], net, f"pin {n}")
+        for n in (115, 117, 127, 129):
+            self.assertEqual(self.entry(n)["dev"], "VDEC"); self.assertEqual(self.entry(n)["status"], "used")
+        for n in (121, 123, 133, 135, 139, 141):
+            self.assertEqual(self.entry(n)["dev"], "VDEC"); self.assertEqual(self.entry(n)["status"], "nc")
         self.assertEqual(self.entry(76)["status"], "dnc")
         self.assertEqual(self.entry(1)["net"], "GND")
         self.assertEqual(self.entry(146)["status"], "nc")
-        self.assertEqual(self.entry(115)["status"], "opt")
-        notes = {n: (self.prj["pins"][str(n)]["note"]) for n in (116, 118, 122, 124)}
+        notes = {n: self.prj["pins"][str(n)]["note"] for n in (116, 118, 122, 124)}
         self.assertIn("PERp0", notes[116]); self.assertIn("PERn0", notes[118])
         self.assertIn("PETp0", notes[122]); self.assertIn("PETn0", notes[124])
-        self.assertTrue(any("CM4 PCIe_TX → PETp0" in f for f in self.prj["facts"]))
-
-    def test_diff_pair_polarity_and_modes(self):
-        for n, e in self.prj["pins"].items():
-            p = self.pins[int(n)]
-            m = re.search(r"_([PN])$", e.get("net", ""))
-            if m and "pair" in p:
-                self.assertTrue(p["sig"].endswith("_" + m.group(1)), f"пин {n}: {e['net']} vs {p['sig']}")
-        modes = {36: "ALT4 TXD2", 35: "ALT4 RXD2", 58: "ALT0 SDA1", 56: "ALT0 SCL1", 54: "ALT4 TXD3", 34: "ALT4 RXD3",
-                 37: "ALT4 RTS3", 39: "ALT4 TXD4", 40: "ALT4 RXD4", 38: "ALT4 RTS4", 31: "ALT4 TXD5", 28: "ALT4 RXD5",
-                 55: "ALT0 TXD0", 51: "ALT0 RXD0", 49: "ALT5 PWM0_0", 27: "ALT3 SPI6_MOSI", 25: "ALT3 SPI6_SCLK"}
-        for n, mode in modes.items():
-            self.assertEqual(self.prj["pins"][str(n)]["mode"], mode, f"пин {n}")
+        self.assertIn("0x21", self.prj["pins"]["82"]["note"])
 
 
 if __name__ == "__main__":
