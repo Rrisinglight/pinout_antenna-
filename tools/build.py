@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Embeds data/cm4_datasheet.json, data/project.json, data/routing.json and data/ds_ru.json into cm4_pinout.html between /*DATA-START*/ and /*DATA-END*/.
+"""Embeds data/cm4_datasheet.json, data/project.json, data/routing.json, data/ds_ru.json and data/rationale.json into cm4_pinout.html between /*DATA-START*/ and /*DATA-END*/.
 Run from the repo root: python3 tools/build.py
 """
 import json
@@ -21,8 +21,10 @@ def build():
     prj = json.loads((ROOT / "data" / "project.json").read_text(encoding="utf-8"))
     rt = json.loads((ROOT / "data" / "routing.json").read_text(encoding="utf-8"))
     dsru = json.loads((ROOT / "data" / "ds_ru.json").read_text(encoding="utf-8"))
+    rat = json.loads((ROOT / "data" / "rationale.json").read_text(encoding="utf-8"))
     block = ("/*DATA-START*/\nvar DATA = " + dumps(ds) + ";\nvar PROJECT = " + dumps(prj) +
-             ";\nvar ROUTING = " + dumps(rt) + ";\nvar DS_RU = " + dumps(dsru) + ";\n/*DATA-END*/")
+             ";\nvar ROUTING = " + dumps(rt) + ";\nvar DS_RU = " + dumps(dsru) +
+             ";\nvar RATIONALE = " + dumps(rat) + ";\n/*DATA-END*/")
     src = HTML.read_text(encoding="utf-8")
     if len(MARK.findall(src)) != 1:
         raise SystemExit("cm4_pinout.html must contain exactly one DATA-START…DATA-END block")
