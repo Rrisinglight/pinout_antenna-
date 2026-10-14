@@ -3,12 +3,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CYR = re.compile(r"[Ѐ-ӿ]")
-TAG = re.compile(r"\[(DS §[0-9.]+(?:, Table \d+)?|DS Table \d+|DS Fig\. \d+|BCM2711 §[0-9.]+|project|sdtv2csi|CM4IO)\]$")
+TAG = re.compile(r"\[(Review/(power-board|crsf-one-wire|vrx-board|analog-to-csi|website|README)\.md(?: (?:п\.|разд\.) [0-9][0-9., –-]*)?|DS §[0-9.]+(?:, Table \d+)?|DS Table \d+|DS Fig\. \d+|BCM2711 §[0-9.]+|ТЗ|project|sdtv2csi|CM4IO)\]$")
 GROUPS = {"GND", "PWR5", "PWR33", "PWR18", "GPIO", "ETH", "SD", "USB", "PCIE", "CSI0", "CSI1",
           "HDMI0", "HDMI1", "DSI0", "DSI1", "I2C0", "CTRL", "RSV", "VDAC", "ANALOG"}
 SECTIONS = ["Механика и разъёмы", "Питание и последовательность включения", "Загрузка, сброс и сервис",
             "Высокоскоростные дифференциальные пары", "GPIO и низкоскоростные интерфейсы", "Wi-Fi и радиочасть",
-            "Тепловой режим", "Видеодекодер ADV7280A-M (проект)"]
+            "Тепловой режим", "Видеодекодер ADV7280A-M (проект)",
+            "Подключение готовых плат Retr_PWR, VRX, CRSF_Mod, CVBS_Mod (проект)"]
 
 
 class TestRouting(unittest.TestCase):
@@ -32,6 +33,7 @@ class TestRouting(unittest.TestCase):
                 self.check_item(f"groups.{g}", t)
         for g in ("PCIE", "USB", "ETH", "CSI0", "CSI1", "GPIO", "PWR5", "PWR33", "GND"):
             self.assertGreaterEqual(len(self.rt["groups"][g]), 1, g)
+        self.assertEqual(len(self.rt["groups"]["GND"]), 2, "GND: datasheet rule + carrier 98/197/198")
 
     def test_pins(self):
         for k, items in self.rt["pins"].items():
@@ -56,8 +58,17 @@ class TestRouting(unittest.TestCase):
                "\n".join(t for items in self.rt["pins"].values() for t in items)
         for needle in ("90 Ом", "100 Ом", "0.15 мм", "0.1 мм", "6.5 × 11 мм", "8 × 15 мм", "10 мм", "DF40C-100DS-0.4V", "DF40HC(3.0)-100DS-0.4V",
                        "4.75", "5.25", "600 мА", "300 мА", "50 мА", "2 мс", "220 Ом", "15 мкА", "PETp0", "PERp0", "CLKREQ#", "PERST#",
-                       "1.8 кОм", "−20", "85 °C", "0x21", "28.63636 МГц"):
+                       "1.8 кОм", "−20", "85 °C", "0x21", "28.63636 МГц",
+                       "3K24", "BSS138", "TCA9534A", "V-IN", "CN1.98", "27.95", "+V_TX1"):
             self.assertIn(needle, blob, needle)
+
+    def test_decoder_on_csi0(self):
+        sec = self.rt["general"][7]
+        self.assertEqual(sec["title"], SECTIONS[7])
+        text = "\n".join(sec["items"])
+        self.assertIn("CSI0", text)
+        self.assertIn("128/130", text)
+        self.assertNotIn("115/117", text)
 
 
 if __name__ == "__main__":

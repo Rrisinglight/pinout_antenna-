@@ -3,7 +3,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CYR = re.compile(r"[Ѐ-ӿ]")
-TAG = re.compile(r"\[(ТЗ|project|sdtv2csi|DS §[0-9.]+(?:, Table \d+)?|DS Table \d+|DS Fig\. \d+|BCM2711 §[0-9.]+)\]$")
+TAG = re.compile(r"\[(Review/(power-board|crsf-one-wire|vrx-board|analog-to-csi|website|README)\.md(?: (?:п\.|разд\.) [0-9][0-9., –-]*)?|DS §[0-9.]+(?:, Table \d+)?|DS Table \d+|DS Fig\. \d+|BCM2711 §[0-9.]+|ТЗ|project|sdtv2csi|CM4IO)\]$")
 SKIP = {"GND", "NC"}
 
 
@@ -41,8 +41,24 @@ class TestRationale(unittest.TestCase):
             self.assertTrue(1 <= len(items) <= 2, k)
             for i, t in enumerate(items):
                 self.check(f"pins.{k}#{i}", t)
-        for k in ("36", "37", "38", "30", "44", "50", "26", "49", "27", "25", "46", "78", "80", "82", "55", "115", "121", "99", "93", "58"):
+        for k in ("36", "35", "37", "38", "30", "44", "50", "26", "49", "27", "25", "46", "78", "80", "82", "55", "115", "128", "99", "93", "58"):
             self.assertIn(k, self.rat["pins"], f"pin {k} needs a rationale bullet")
+
+    def test_v3_claims(self):
+        bullets = list(self.rat["overview"])
+        for grp in ("devices", "pins"):
+            for items in self.rat[grp].values():
+                bullets += items
+        blob = "\n".join(bullets)
+        self.assertIn("TCA9534A", blob)
+        self.assertIn("CSI0", " ".join(self.rat["devices"]["VDEC"]), "decoder must be on CSI0")
+        self.assertIn("CSI1", " ".join(self.rat["devices"]["CAM"]), "camera must be on CSI1")
+        spare = " ".join(self.rat["devices"]["SPARE"])
+        for needle in ("GPIO7", "GPIO11"):
+            self.assertIn(needle, spare, needle)
+        for t in bullets:
+            if "RTS3 = GPIO7" in t:
+                self.assertIn("не нужн", t, f"RTS3 as the direction scheme: {t[:60]}")
 
     def test_i2c_rationale_present(self):
         blob = " ".join(self.rat["devices"]["I2C"]) + " " + " ".join(self.rat["overview"])
