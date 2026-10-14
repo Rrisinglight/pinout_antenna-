@@ -1,0 +1,1128 @@
+{
+ "source": {
+  "project": "Retr_2026-09-26",
+  "board": "Retr_Cross",
+  "snapshot": "2026-10-14 12:28–12:34",
+  "chains": "Review/_data/chains.json"
+ },
+ "pins": {
+  "1": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "2": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "3": {
+   "net": "ETH_PAIR3_P",
+   "to": [],
+   "wired": false
+  },
+  "4": {
+   "net": "TD1+",
+   "to": [
+    "TVS1.6",
+    "TVS1.5",
+    "LT1*.8"
+   ],
+   "wired": true
+  },
+  "5": {
+   "net": "ETH_PAIR3_N",
+   "to": [],
+   "wired": false
+  },
+  "6": {
+   "net": "TD1-",
+   "to": [
+    "TVS1.7",
+    "TVS1.4",
+    "LT1*.7"
+   ],
+   "wired": true
+  },
+  "7": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "8": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "9": {
+   "net": "ETH_PAIR2_N",
+   "to": [],
+   "wired": false
+  },
+  "10": {
+   "net": "TD0-",
+   "to": [
+    "TVS1.9",
+    "TVS1.2",
+    "LT1*.1"
+   ],
+   "wired": true
+  },
+  "11": {
+   "net": "ETH_PAIR2_P",
+   "to": [],
+   "wired": false
+  },
+  "12": {
+   "net": "TD0+",
+   "to": [
+    "TVS1.10",
+    "TVS1.1",
+    "LT1*.2"
+   ],
+   "wired": true
+  },
+  "13": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "14": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "15": {
+   "net": "E_LED_Y",
+   "to": [
+    "R1.2",
+    "ETH_Y.1 (via R1)"
+   ],
+   "wired": true
+  },
+  "16": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "17": {
+   "net": "E_LED_G",
+   "to": [
+    "R2.2",
+    "ETH_G.1 (via R2)"
+   ],
+   "wired": true
+  },
+  "18": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "19": {
+   "net": "ETH_nLED_SPD1",
+   "to": [],
+   "wired": false
+  },
+  "20": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "21": {
+   "net": "A_LED_G",
+   "to": [
+    "R10.2",
+    "ACT.1 (via R10)"
+   ],
+   "wired": true
+  },
+  "22": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "23": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "24": {
+   "net": "FAN_TACH",
+   "to": [],
+   "wired": false
+  },
+  "25": {
+   "net": "VRX_CLK",
+   "to": [
+    "VRX_1.4"
+   ],
+   "wired": true
+  },
+  "26": {
+   "net": "TX2_PWR_EN",
+   "to": [],
+   "wired": false
+  },
+  "27": {
+   "net": "VRX_DATA",
+   "to": [
+    "VRX_1.2"
+   ],
+   "wired": true
+  },
+  "28": {
+   "net": "UART5_RXD",
+   "to": [],
+   "wired": false
+  },
+  "29": {
+   "net": "IO16",
+   "to": [],
+   "wired": false
+  },
+  "30": {
+   "net": "CVBS_SEL0",
+   "to": [
+    "VRX_1.18"
+   ],
+   "wired": true
+  },
+  "31": {
+   "net": "UART5_TXD",
+   "to": [],
+   "wired": false
+  },
+  "32": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "33": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "34": {
+   "net": "UART3_RXD",
+   "to": [],
+   "wired": false
+  },
+  "35": {
+   "net": "UART2_RXD",
+   "to": [],
+   "wired": false
+  },
+  "36": {
+   "net": "UART2_TXD",
+   "to": [],
+   "wired": false
+  },
+  "37": {
+   "net": "IO7",
+   "to": [],
+   "wired": false
+  },
+  "38": {
+   "net": "IO11",
+   "to": [],
+   "wired": false
+  },
+  "39": {
+   "net": "UART4_TXD",
+   "to": [],
+   "wired": false
+  },
+  "40": {
+   "net": "UART4_RXD",
+   "to": [],
+   "wired": false
+  },
+  "41": {
+   "net": "VRX_SS4",
+   "to": [
+    "VRX_1.12"
+   ],
+   "wired": true
+  },
+  "42": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "43": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "44": {
+   "net": "CVBS_SEL1",
+   "to": [
+    "VRX_1.20"
+   ],
+   "wired": true
+  },
+  "45": {
+   "net": "VRX_SS3",
+   "to": [
+    "VRX_1.10"
+   ],
+   "wired": true
+  },
+  "46": {
+   "net": "VRX_SS1",
+   "to": [
+    "VRX_1.6"
+   ],
+   "wired": true
+  },
+  "47": {
+   "net": "VRX_SS2",
+   "to": [
+    "VRX_1.8"
+   ],
+   "wired": true
+  },
+  "48": {
+   "net": "IO27",
+   "to": [],
+   "wired": false
+  },
+  "49": {
+   "net": "FAN_PWM",
+   "to": [],
+   "wired": false
+  },
+  "50": {
+   "net": "TX1_PWR_EN",
+   "to": [],
+   "wired": false
+  },
+  "51": {
+   "net": "UART0_RXD",
+   "to": [
+    "UART.3"
+   ],
+   "wired": true
+  },
+  "52": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "53": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "54": {
+   "net": "UART3_TXD",
+   "to": [],
+   "wired": false
+  },
+  "55": {
+   "net": "UART0_TXD",
+   "to": [
+    "UART.2"
+   ],
+   "wired": true
+  },
+  "56": {
+   "net": "SCL1",
+   "to": [],
+   "wired": false
+  },
+  "57": {
+   "net": "SD_CLK",
+   "to": [],
+   "wired": false
+  },
+  "58": {
+   "net": "SDA1",
+   "to": [],
+   "wired": false
+  },
+  "59": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "60": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "61": {
+   "net": "SD_DAT3",
+   "to": [],
+   "wired": false
+  },
+  "62": {
+   "net": "SD_CMD",
+   "to": [],
+   "wired": false
+  },
+  "63": {
+   "net": "SD_DAT0",
+   "to": [],
+   "wired": false
+  },
+  "64": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "65": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "66": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "67": {
+   "net": "SD_DAT1",
+   "to": [],
+   "wired": false
+  },
+  "68": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "69": {
+   "net": "SD_DAT2",
+   "to": [],
+   "wired": false
+  },
+  "70": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "71": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "72": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "73": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "74": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "75": {
+   "net": "SD_PWR_ON",
+   "to": [],
+   "wired": false
+  },
+  "76": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "77": {
+   "net": "+5V_CM",
+   "to": [],
+   "wired": null
+  },
+  "78": {
+   "net": "+3V",
+   "to": [],
+   "wired": false
+  },
+  "79": {
+   "net": "+5V_CM",
+   "to": [],
+   "wired": null
+  },
+  "80": {
+   "net": "SCL0",
+   "to": [
+    "J2.3",
+    "U1.31",
+    "FPC1.3",
+    "U25.4",
+    "VRX_1.16"
+   ],
+   "wired": true
+  },
+  "81": {
+   "net": "+5V_CM",
+   "to": [],
+   "wired": null
+  },
+  "82": {
+   "net": "SDA0",
+   "to": [
+    "J2.2",
+    "U1.30",
+    "FPC1.2",
+    "U25.3",
+    "VRX_1.14"
+   ],
+   "wired": true
+  },
+  "83": {
+   "net": "+5V_CM",
+   "to": [],
+   "wired": null
+  },
+  "84": {
+   "net": "+3V",
+   "to": [],
+   "wired": false
+  },
+  "85": {
+   "net": "+5V_CM",
+   "to": [],
+   "wired": null
+  },
+  "86": {
+   "net": "+3V",
+   "to": [],
+   "wired": false
+  },
+  "87": {
+   "net": "+5V_CM",
+   "to": [],
+   "wired": null
+  },
+  "88": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "89": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "90": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "91": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "92": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "93": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "94": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "95": {
+   "net": "NPWR_LED",
+   "to": [
+    "R9.2",
+    "PWR.1 (via R9)"
+   ],
+   "wired": true
+  },
+  "96": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "97": {
+   "net": "CAM_GPIO",
+   "to": [
+    "FPC1.6"
+   ],
+   "wired": true
+  },
+  "98": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "99": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "100": {
+   "net": "NEXTRST",
+   "to": [
+    "J_RST.1"
+   ],
+   "wired": true
+  },
+  "101": {
+   "net": "USBOTG_ID",
+   "to": [
+    "R_OTG.2"
+   ],
+   "wired": true
+  },
+  "102": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "103": {
+   "net": "USB2_N",
+   "to": [
+    "PWR_IN1.B7",
+    "PWR_IN1.A7",
+    "USB1.B7",
+    "USB1.A7"
+   ],
+   "wired": true
+  },
+  "104": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "105": {
+   "net": "USB2_P",
+   "to": [
+    "PWR_IN1.B6",
+    "PWR_IN1.A6",
+    "USB1.B6",
+    "USB1.A6"
+   ],
+   "wired": true
+  },
+  "106": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "107": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "108": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "109": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "110": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "111": {
+   "net": "TV_OUT",
+   "to": [],
+   "wired": false
+  },
+  "112": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "113": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "114": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "115": {
+   "net": "CAM1_DO_N",
+   "to": [
+    "FPC1.21"
+   ],
+   "wired": true
+  },
+  "116": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "117": {
+   "net": "CAM1_DO_P",
+   "to": [
+    "FPC1.20"
+   ],
+   "wired": true
+  },
+  "118": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "119": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "120": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "121": {
+   "net": "CAM1_D1_N",
+   "to": [
+    "FPC1.18"
+   ],
+   "wired": true
+  },
+  "122": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "123": {
+   "net": "CAM1_D1_P",
+   "to": [
+    "FPC1.17"
+   ],
+   "wired": true
+  },
+  "124": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "125": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "126": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "127": {
+   "net": "CAM1_C_N",
+   "to": [
+    "FPC1.15"
+   ],
+   "wired": true
+  },
+  "128": {
+   "net": "CAM0_DO_N",
+   "to": [
+    "R5.2",
+    "J2.14 (via R5)",
+    "U1.10 (via R5)"
+   ],
+   "wired": true
+  },
+  "129": {
+   "net": "CAM1_C_P",
+   "to": [
+    "FPC1.14"
+   ],
+   "wired": true
+  },
+  "130": {
+   "net": "CAM0_DO_P",
+   "to": [
+    "R6.2",
+    "J2.13 (via R6)",
+    "U1.9 (via R6)"
+   ],
+   "wired": true
+  },
+  "131": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "132": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "133": {
+   "net": "CAM1_D2_N",
+   "to": [
+    "FPC1.12"
+   ],
+   "wired": true
+  },
+  "134": {
+   "net": "CAM0_D1_N",
+   "to": [
+    "R11.2",
+    "J2.11 (via R11)"
+   ],
+   "wired": true
+  },
+  "135": {
+   "net": "CAM1_D2_P",
+   "to": [
+    "FPC1.11"
+   ],
+   "wired": true
+  },
+  "136": {
+   "net": "CAM0_D1_P",
+   "to": [
+    "R12.2",
+    "J2.10 (via R12)"
+   ],
+   "wired": true
+  },
+  "137": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "138": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "139": {
+   "net": "CAM1_D3_N",
+   "to": [
+    "FPC1.9"
+   ],
+   "wired": true
+  },
+  "140": {
+   "net": "CAM0_C_N",
+   "to": [
+    "R13.2",
+    "J2.8 (via R13)",
+    "U1.12 (via R13)"
+   ],
+   "wired": true
+  },
+  "141": {
+   "net": "CAM1_D3_P",
+   "to": [
+    "FPC1.8"
+   ],
+   "wired": true
+  },
+  "142": {
+   "net": "CAM0_C_P",
+   "to": [
+    "R19.2",
+    "J2.7 (via R19)",
+    "U1.11 (via R19)"
+   ],
+   "wired": true
+  },
+  "143": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "144": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "145": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "146": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "147": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "148": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "149": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "150": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "151": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "152": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "153": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "154": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "155": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "156": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "157": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "158": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "159": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "160": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "161": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "162": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "163": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "164": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "165": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "166": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "167": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "168": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "169": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "170": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "171": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "172": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "173": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "174": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "175": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "176": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "177": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "178": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "179": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "180": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "181": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "182": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "183": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "184": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "185": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "186": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "187": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "188": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "189": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "190": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "191": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "192": {
+   "net": "GND",
+   "to": [],
+   "wired": null
+  },
+  "193": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "194": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "195": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "196": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "197": {
+   "net": "RG_OE",
+   "to": [],
+   "wired": false
+  },
+  "198": {
+   "net": "RG_OE",
+   "to": [],
+   "wired": false
+  },
+  "199": {
+   "net": "",
+   "to": [],
+   "wired": null
+  },
+  "200": {
+   "net": "",
+   "to": [],
+   "wired": null
+  }
+ }
+}
