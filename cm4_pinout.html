@@ -30,6 +30,7 @@ h1{margin:0;font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:600;letter-spacing
 .lg{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:11px;padding:3px 9px;border-radius:20px;cursor:pointer;border:1.5px solid transparent;color:var(--fg2);background:var(--bg2)}
 .lg:hover{border-color:var(--bd2)}.lg:focus-visible{outline:none;box-shadow:var(--focus)}
 .lg[aria-pressed="true"]{border-color:var(--bd);background:var(--bg3);color:var(--fg)}
+body.layer-ds #only-issues{display:none}
 .lg .d{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .main{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 @media (min-width:1280px){.main{grid-template-columns:minmax(0,1fr) 340px;align-items:start}}
@@ -252,7 +253,7 @@ var LIB = (function () {
   var NS = 'http://www.w3.org/2000/svg';
   var pins = DATA.pins, ALT = DATA.alt, byN = {};
   pins.forEach(function (p) { byN[p.n] = p; });
-  var state = {layer: 'ds', filter: null, sel: null};
+  var state = {layer: 'ds', filter: null, sel: null, onlyIssues: false};
   var $ = function (s) { return document.querySelector(s); };
   var board = $('#board'), leg = $('#leg'), panel = $('#panel'), routing = $('#routing');
   var design = $('#design');
@@ -284,9 +285,14 @@ var LIB = (function () {
     if (state.layer === 'ds') return LIB.GROUPS[key] ? LIB.GROUPS[key].c : '#8C8C8C';
     return PROJECT.devices[key] ? PROJECT.devices[key].c : '#9A9A9A';
   }
+  var issueMemo = {};   // pin number → has schematic/design issue (ov and SCHEMATIC are static)
+  function hasIssue(p) {
+    if (!(p.n in issueMemo)) { var o = ov(p); issueMemo[p.n] = LIB.hasIssue(p, o, LIB.checkOf(p, o, SCHEMATIC)); }
+    return issueMemo[p.n];
+  }
   function visible(p) {
-    if (!state.filter) return true;
-    return LIB.chipKey(p, ov(p), state.layer) === state.filter;
+    if (state.filter && LIB.chipKey(p, ov(p), state.layer) !== state.filter) return false;
+    return !state.onlyIssues || hasIssue(p);
   }
 
   /* ---------- board ---------- */
@@ -357,6 +363,9 @@ var LIB = (function () {
       b.addEventListener('click', function () { setFilter(state.filter === key ? null : key); });
       leg.appendChild(b);
     });
+    var oi = h('button', 'lg', 'Только с замечаниями'); oi.type = 'button'; oi.id = 'only-issues'; oi.setAttribute('aria-pressed', 'false');
+    oi.addEventListener('click', function () { setOnlyIssues(!state.onlyIssues); });
+    leg.appendChild(oi);   // hidden in the Datasheet layer by CSS
   }
 
   /* ---------- general layout notes ---------- */
@@ -605,7 +614,8 @@ var LIB = (function () {
     });
     var cnt = $('#cnt');
     if (cnt) cnt.textContent = 'Показано ' + shown + ' из 200 пинов' + (state.layer === 'prj' ? tally() : '');
-    leg.querySelectorAll('.lg').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.k === state.filter)); });
+    leg.querySelectorAll('.lg[data-k]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.k === state.filter)); });
+    var oi = $('#only-issues'); if (oi) oi.setAttribute('aria-pressed', String(state.onlyIssues));
     document.querySelectorAll('.seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.layer === state.layer)); });
     renderPanel();
   }
@@ -615,14 +625,15 @@ var LIB = (function () {
     else { state.sel = +n; state.filter = null; }
     apply();
   }
-  function setLayer(layer) { state.layer = layer; state.filter = null; buildLegend(); apply(); }
+  function setLayer(layer) { state.layer = layer; state.filter = null; state.onlyIssues = false; buildLegend(); apply(); }
+  function setOnlyIssues(v) { state.onlyIssues = !!v; apply(); }
   function setFilter(key) { state.filter = key; state.sel = null; apply(); }
 
   document.querySelectorAll('.seg button').forEach(function (b) {
     b.addEventListener('click', function () { setLayer(b.dataset.layer); });
   });
 
-  window.PINOUT = {select: select, setLayer: setLayer, setFilter: setFilter, state: state, apply: apply, ov: ov, byN: byN};
+  window.PINOUT = {select: select, setLayer: setLayer, setFilter: setFilter, setOnlyIssues: setOnlyIssues, state: state, apply: apply, ov: ov, byN: byN};
   $('#sub').textContent = PROJECT.meta.cm4 + ' · rev. ' + PROJECT.meta.rev + ', ' + PROJECT.meta.date +
     ' · схема: ' + SCHEMATIC.source.project + ' (снимок ' + SCHEMATIC.source.snapshot.slice(0, 10) + ')';
   buildBoard();

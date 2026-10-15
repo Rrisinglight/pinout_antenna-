@@ -273,6 +273,22 @@ class TestPage(unittest.TestCase):
         self.assertEqual(nums[0], tally.get("ok", 0))
         self.assertEqual(nums[2], tally.get("gnd_open", 0) + tally.get("missing", 0))
 
+    def test_only_issues_filter(self):
+        self.assertFalse(self.page.locator("#only-issues").is_visible())
+        self.page.click('.seg button[data-layer="prj"]')
+        self.assertTrue(self.page.locator("#only-issues").is_visible())
+        self.page.click("#only-issues")
+        n = self.page.evaluate("DATA.pins.filter(p=>LIB.hasIssue(p,PINOUT.ov(p),LIB.checkOf(p,PINOUT.ov(p),SCHEMATIC))).length")
+        self.assertGreater(n, 20); self.assertLess(n, 120)
+        self.assertEqual(self.visible_pads(), n)
+        self.assertEqual(self.page.locator("#cnt").inner_text().split(" ·")[0], f"Показано {n} из 200 пинов")
+        self.page.click('#leg .lg[data-k="VRX"]')          # combines with the device filter
+        m = self.page.evaluate("DATA.pins.filter(p=>PINOUT.ov(p).dev==='VRX'&&LIB.hasIssue(p,PINOUT.ov(p),LIB.checkOf(p,PINOUT.ov(p),SCHEMATIC))).length")
+        self.assertEqual(self.visible_pads(), m); self.assertGreater(m, 0)
+        self.page.click('.seg button[data-layer="ds"]')    # layer switch resets it
+        self.assertEqual(self.visible_pads(), 200)
+        self.assertEqual(self.page.get_attribute("#only-issues", "aria-pressed"), "false")
+
     def test_mobile(self):
         page = self.browser.new_page(viewport={"width": 400, "height": 800})
         page.goto(URL)
