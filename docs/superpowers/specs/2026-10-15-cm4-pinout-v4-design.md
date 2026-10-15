@@ -116,7 +116,7 @@ The `Dir.` table column and the panel «Direction» row show `LIB.DIRS[LIB.dirOf
 ### 3. Page UI (Project layer additions; Datasheet layer unchanged except the drawing)
 
 - **Legend row** gets a toggle button `#only-issues` («Только с замечаниями», `aria-pressed`) visible in the Project layer. When pressed, `visible(p)` also requires `LIB.hasIssue(...)`; it combines with the device filter; switching layer resets it.
-- **Table**: columns `#, Conn., Signal, Group, Dir., Net*, Device*, Mode*, Status*, Схема*, Проверка*, Note*, Pair, Datasheet` (`*` = Project layer). `Conn.` shows `CN1`/`CN2`. `Схема` = `s.net || '—'` (mono). `Проверка` = verdict symbol + text, plus ` · N замеч.` when issues exist; cell class `c-check c-<code>`. `Dir.` shows the layer's direction (`LIB.DIRS[dirOf(...)]`).
+- **Table**: columns `#, Conn., Signal, Group, Dir., Net*, Device*, Mode*, Status*, Схема*, Проверка*, Note*, Pair, Datasheet` (`*` = Project layer). `Conn.` shows `CN1`/`CN2`. `Схема` = `s.net || '—'` (mono). `Проверка` = the verdict **symbol only** (✓ ≈ ✗ —) plus ` · N` when N issues exist, with the full verdict text in the cell's `title`; cell class `c-check c-<code>` (the full text lives in the panel). In the Project layer the datasheet-only columns `Group`, `Dir.`, `Pair` and `Datasheet` are hidden (classes `c-grp`, `c-dir`, `c-pair`, `ds`; they stay in the Datasheet layer and in the panel), `Note` has no min-width there, and `Mode` is hidden only at 1280–1599 px viewports, so that the Project-layer table fits `.tbl-wrap` without clipped columns at 1280 px and at 1600 px (tested at both). `Dir.` shows the layer's direction (`LIB.DIRS[dirOf(...)]`).
 - **Counter** (`#cnt`): «Показано N из 200 пинов»; in the Project layer append « · ✓ a · ≈ b · ✗ c · — d» counted over all 200 pins (`✓` = ok; `≈` = dead_end + renamed + extra; `✗` = gnd_open + missing; `—` = none).
 - **Pad badge**: in the Project layer a pad with `hasIssue` gets class `warn` (small red triangle `path.badge` in the pad's top-right corner, 6 px).
 - **Panel** (`#panel`) header: `CN1 (J1 в даташите) · нечётный ряд` / `CN2 (J2 в даташите) · чётный ряд`. Project layer `dl` adds rows **Direction** (project direction), **Схема** (`code(s.net)` + «→ dest1, dest2…» or «—»), **Проверка** (verdict text, class `chk-<code>`); after the datasheet quote a block `h3` «Замечания» with `ul` of `issues` rendered through `noteLi` (source tag styled `.src`), or the line «Замечаний нет.» when empty. Filter summary (device selected, no pin) lists pins as `pin N · sig — net` and appends the issue count.
@@ -143,7 +143,7 @@ The `Dir.` table column and the panel «Direction» row show `LIB.DIRS[LIB.dirOf
 | FAN | `Fan` | — |
 | PCIE | `PCIe → M.2 NVMe` | — |
 | CAM | `Camera FPC1 · CSI1 (4 lanes)` | **new**, colour `#3C9D8A` (old CSI0) |
-| I2C0 | `I2C0 · camera, ADV7280A-M, VRX ADS1115` | **new**, colour `#5B8AC2` |
+| I2C0 | `I2C0 · camera, ADV7280A-M, VRX ADS1115` | **new**, colour `#4A90D9` (distinct from I2C `#5B8AC2`) |
 | VDEC | `ADV7280A-M video decoder · CSI0` | name |
 | USB | `USB 2.0` | — |
 | ETH | `Ethernet → ETH1 (2 pairs)` | name |
@@ -167,18 +167,18 @@ Fields per explicit entry: `net`, `dev`, `mode` (GPIO pins), `dir` (mandatory fo
 | pin | GPIO | rev 2 → rev 3 net | dev | mode | dir | status | note must say / issues (sources) |
 |---|---|---|---|---|---|---|---|
 | 3, 5, 9, 11 | — | `ETH_PAIR3_P/N`, `ETH_PAIR2_P/N` (keep) | ETH | — | bidir | **opt** | carrier is 100 Мбит on two pairs; these are dangling labels. Issue: решение по коммутатору на плате [Review/website.md п. 12] |
-| 4, 6, 10, 12 | — | → `TD1+`, `TD1-`, `TD0-`, `TD0+` | ETH | — | bidir | used | → TVS1 → `LT1*` (ALANL100X1) → `ETH1` SM04B, 100 Мбит, пара 100 Ом |
+| 4, 6, 10, 12 | — | → `TD1+`, `TD1-`, `TD0-`, `TD0+` | ETH | — | bidir | used | → TVS1 → `LT1*` (ALANL100X1) → `ETH1` SM04B, 100 Мбит, пара 100 Ом. Issue: средние точки LT1* сразу на GND без цепи Боба Смита, метки пар на LT1* перекрещены (TD0- на выводе «TD1+») — для PHY CM4 не проверено [Review/website.md п. 12] |
 | 15 | — | → `E_LED_Y` | ETH | — | out | opt | через R1 3K3 → `ETH_Y`. Issue: анод светодиода на `PWR_3V` (отключаемая шина) — перевести на CM4_3V3 [Review/power-board.md п. 10] |
 | 17 | — | → `E_LED_G` | ETH | — | out | opt | через R2 → `ETH_G`; same issue |
 | 19 | — | `ETH_nLED_SPD1` (keep) | ETH | — | out | opt | обрыв на CN1 |
 | 21 | — | → `A_LED_G` | CTRL | — | out | used | через R10 → `ACT`; anode issue as 15 |
 | 24 | 26 | `FAN_TACH` | FAN | GPIO | **in** | used | note unchanged; **no issues** (the dangling label is reported by the verdict «обрыв», not as an issue) |
-| 25 | 21 | `VRX_CLK` | VRX | ALT3 SPI6_SCLK | out | used | → `VRX_1.4`. Issue: на платах 1.2/3.3 ГГц X1.2/X1.4 = SCK/DAT перепутаны [Review/vrx-board.md п. 1] |
+| 25 | 21 | `VRX_CLK` | VRX | ALT3 SPI6_SCLK | out | used | → `VRX_1.4`. Issues: на платах 1.2/3.3 ГГц X1.2/X1.4 = SCK/DAT перепутаны [Review/vrx-board.md п. 1]; уровень 3.3 В для SPI/LE приёмников, питающихся от 5 В, не проверен [Review/vrx-board.md разд. 7] (same second issue on 27) |
 | 26 | 19 | `TX2_PWR_EN` → `""` | **SPARE** | GPIO | bidir | opt | свободен: управление ключом TX2 — выход P7 TCA9534A (вариант B). Issues: при варианте A — вернуть `TX2_PWR_EN` [Review/power-board.md разд. 7.2]; ключей TX нет ни на носителе, ни на Retr_PWR, `+V_TX2` не подключена, напряжение (батарея или 12 В) не решено [Review/power-board.md п. 6] |
 | 27 | 20 | `VRX_DATA` | VRX | ALT3 SPI6_MOSI | out | used | → `VRX_1.2`; same swap issue |
 | 28 | 13 | `UART5_RXD` | SERVO | ALT4 RXD5 | in | used | от блока CBB3 (CRSF_Mod) RX. Issue: на PCB два блока CBB3/CBB4 на одной шине `SRV_1/2` — оставить один [Review/crsf-one-wire.md п. 12] |
 | 29 | 16 | `CRSF2_INV` | CRSF2 | GPIO | out | used | → CBB2 INV; INV нельзя оставлять открытым (делитель R4/~R4) [Review/crsf-one-wire.md п. 9]. Check: carrier label `IO16`, обрыв |
-| 30 | 6 | `CVBS_SEL0` | **VRX** | GPIO | out | used | → `VRX_1.18` = CH_A RS2255 на плате VRX; pull-up при загрузке [Review/vrx-board.md п. 10]. Issue (30 and 44): уровень 3.3 В на входах RS2255 и приёмников при их питании 5 В не проверен; таблица BA→канал по DS RS2255 не сверена [Review/website.md п. 10] |
+| 30 | 6 | `CVBS_SEL0` | **VRX** | GPIO | out | used | → `VRX_1.18` = CH_A RS2255 на плате VRX; pull-up при загрузке [Review/vrx-board.md п. 10]. Issue (30 and 44): уровень 3.3 В на входах RS2255 при питании 5 В не проверен; таблица BA→канал по DS RS2255 не сверена [Review/website.md п. 10] |
 | 31 | 12 | `UART5_TXD` | SERVO | ALT4 TXD5 | out | used | → CBB3 TX; направление — авто (RC на модуле), DIR не нужен |
 | 34 | 5 | `UART3_RXD` | CRSF1 | ALT4 RXD3 | in | used | Issue: на PCB CN1.34 и CN1.37 в одной цепи RX3 — Import Changes [Review/crsf-one-wire.md п. 4] |
 | 37 | 7 | `CRSF1_DIR` → `""` | **SPARE** | GPIO | bidir | opt | DIR не нужен (авто-направление CRSF_Mod); pull-up при загрузке; SPI0_CE1_N. Issue: вариант A использует его для `PW_VRX` [Review/power-board.md разд. 7.2] |
@@ -216,7 +216,7 @@ Fields per explicit entry: `net`, `dev`, `mode` (GPIO pins), `dir` (mandatory fo
 | 139 / 141 | → `CAM1_D3_N` / `CAM1_D3_P` | CAM | in | used | ← `FPC1.9/8` |
 | 128 / 130 | `CSI0_D0_N/P` → `CAM0_D0_N` / `CAM0_D0_P` | **VDEC** | in | used | ← `U1.10/9` через R5/R6; параллельно `J2.14/13`. Issues: в схеме `CAM0_DO_*` (буква O) [Review/analog-to-csi.md п. 13]; тракт до CN2 не разведён [Review/analog-to-csi.md п. 3]; U1 и J2 параллельно — выбрать одно [Review/analog-to-csi.md п. 6]; U1 питается от `PWR_3V`, включается вместе с `PW_VRX` (D1a) [Review/power-board.md п. 4]; для ADV на CSI0 с I2C на 82/80 нужен свой overlay, не проверено [Review/analog-to-csi.md п. 2] |
 | 134 / 136 | `CSI0_D1_N/P` → `CAM0_D1_N` / `CAM0_D1_P` | VDEC | in | **opt** | только `J2.11/10` — порт внешнего CVBS_Mod; ADV7280A-M использует одну линию, D1 на модуле не подключена. Issue: `R34`/`R35` (GPIO0/GPIO1 разъёма J2) висят — для камеры на J2 понадобилась бы линия включения, кандидат — резервный GPIO [Review/analog-to-csi.md п. 8] |
-| 140 / 142 | `CSI0_CLK_N/P` → `CAM0_C_N` / `CAM0_C_P` | VDEC | in | used | ← `U1.12/11` через R13/R19; `J2.8/7` |
+| 140 / 142 | `CSI0_CLK_N/P` → `CAM0_C_N` / `CAM0_C_P` | VDEC | in | used | ← `U1.12/11` через R13/R19; `J2.8/7`. Issues as 128/130: тракт до CN2 не разведён [Review/analog-to-csi.md п. 3]; U1 и J2 параллельно [Review/analog-to-csi.md п. 6] |
 | 197, 198 | `GND` (new explicit) | GND | gnd | used | Issue: CN2.97/98 на цепи `RG_OE` вместо GND [Review/website.md п. 13] |
 
 Invariants (tested): all 28 GPIO assigned exactly once; GPIO in use = 24, spare = 4 (7, 11, 17, 19); modes match DS ALT table; nets unique outside GND/PWR groups; `_P`/`_N` polarity matches the datasheet signal; every pin resolves (no `free`).
