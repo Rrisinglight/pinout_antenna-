@@ -79,6 +79,7 @@ class TestPage(unittest.TestCase):
         for s in ("GPIO14", "CN1 (J1 в даташите)", "нечётный", "Group", "Direction", "bidirectional", "Datasheet", "при загрузке pull-down"):
             self.assertIn(s, text)
         self.assertNotIn("J1 ·", text)
+        self.assertNotIn("UART0_TXD", text)                    # Datasheet layer: no project data
         self.assertRegex(self.page.locator("#panel .dsq").inner_text(), "[А-Яа-я]")
         self.assertIn("TXD0", self.page.locator("#panel table.alt").inner_text())
         self.assertEqual(self.page.locator("#panel .issues").count(), 0)      # Datasheet layer: no check block
@@ -89,6 +90,7 @@ class TestPage(unittest.TestCase):
         text = self.page.locator("#panel").inner_text()
         for s in ("SDA0", "I2C0 · camera, ADV7280A-M, VRX ADS1115", "Схема", "U1.30", "Проверка", "✓ совпадает", "Замечания", "3.77"):
             self.assertIn(s, text)
+        self.assertIn("Direction (DS)", text)                  # datasheet Direction row, distinct from the project one
         self.assertGreaterEqual(self.page.locator("#panel ul.issues li").count(), 2)
         self.page.click('g.pad[data-n="98"]')
         self.assertIn("✗ GND не на земле (без цепи)", self.page.locator("#panel").inner_text())
@@ -285,6 +287,7 @@ class TestPage(unittest.TestCase):
         self.page.click('#leg .lg[data-k="VRX"]')          # combines with the device filter
         m = self.page.evaluate("DATA.pins.filter(p=>PINOUT.ov(p).dev==='VRX'&&LIB.hasIssue(p,PINOUT.ov(p),LIB.checkOf(p,PINOUT.ov(p),SCHEMATIC))).length")
         self.assertEqual(self.visible_pads(), m); self.assertGreater(m, 0)
+        self.assertEqual(self.page.locator("#panel ul.plain li").count(), self.visible_pads())   # panel list honours the toggle
         self.page.click('.seg button[data-layer="ds"]')    # layer switch resets it
         self.assertEqual(self.visible_pads(), 200)
         self.assertEqual(self.page.get_attribute("#only-issues", "aria-pressed"), "false")

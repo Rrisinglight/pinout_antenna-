@@ -33,6 +33,7 @@ class TestSchematic(unittest.TestCase):
         self.assertEqual(p["77"]["net"], "+5V_CM"); self.assertEqual(p["78"]["net"], "+3V")
         self.assertEqual(sum(1 for x in p.values() if x["net"]), 131)   # 200 − 51 unused − 14 site-only − CN1.98 − 3 more empty labels (verified against chains.json)
 
+    @unittest.skipUnless((ROOT / "Review" / "_data" / "chains.json").exists(), "review snapshot not present")
     def test_regenerates_identically(self):
         import subprocess, sys
         out = subprocess.run([sys.executable, "-I", str(ROOT / "tools" / "extract_schematic.py"), "--check"], capture_output=True, text=True)
