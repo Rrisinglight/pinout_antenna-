@@ -1,3 +1,4 @@
+import re
 import unittest
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -75,19 +76,43 @@ class TestPage(unittest.TestCase):
     def test_pin_panel(self):
         self.page.click('g.pad[data-n="55"]')
         text = self.page.locator("#panel").inner_text()
-        for s in ("GPIO14", "J1", "нечётный", "Group", "Direction", "bidirectional", "Datasheet", "при загрузке pull-down"):
+        for s in ("GPIO14", "CN1 (J1 в даташите)", "нечётный", "Group", "Direction", "bidirectional", "Datasheet", "при загрузке pull-down"):
             self.assertIn(s, text)
+        self.assertNotIn("J1 ·", text)
         self.assertRegex(self.page.locator("#panel .dsq").inner_text(), "[А-Яа-я]")
-        self.assertIn("GPIO: typically a 3.3V signal", self.page.locator("#panel .dsq-en").inner_text())
-        self.assertNotIn("UART0_TXD", text)
         self.assertIn("TXD0", self.page.locator("#panel table.alt").inner_text())
-        self.assertTrue(self.page.evaluate("document.body.classList.contains('has-sel')"))
+        self.assertEqual(self.page.locator("#panel .issues").count(), 0)      # Datasheet layer: no check block
+
+    def test_project_panel_check_and_issues(self):
+        self.page.click('.seg button[data-layer="prj"]')
+        self.page.click('g.pad[data-n="82"]')
+        text = self.page.locator("#panel").inner_text()
+        for s in ("SDA0", "I2C0 · camera, ADV7280A-M, VRX ADS1115", "Схема", "U1.30", "Проверка", "✓ совпадает", "Замечания", "3.77"):
+            self.assertIn(s, text)
+        self.assertGreaterEqual(self.page.locator("#panel ul.issues li").count(), 2)
+        self.page.click('g.pad[data-n="98"]')
+        self.assertIn("✗ GND не на земле (без цепи)", self.page.locator("#panel").inner_text())
+        self.page.click('g.pad[data-n="55"]')
+        self.assertIn("Замечаний нет.", self.page.locator("#panel").inner_text())
+        self.assertIn("output", self.page.locator("#panel").inner_text())   # project Direction row
+        self.page.click('g.pad[data-n="37"]')
+        self.assertIn("spare (no net)", self.page.locator("#panel").inner_text())
+
+    def test_spare_pin(self):
+        self.page.click('.seg button[data-layer="prj"]')
+        self.page.click('g.pad[data-n="37"]')
+        text = self.page.locator("#panel").inner_text()
+        # brief lists "вариант A"; the pin-37 issue text in data/project.json starts with a capital «Вариант A»
+        for s in ("Spare GPIO", "≈ в схеме метка IO7, на сайте не используется", "GPIO7", "Вариант A"):
+            self.assertIn(s, text)
+        self.assertTrue(re.fullmatch(r"≈( · \d+)?", self.page.locator('#tbl tbody tr.row[data-n="37"] td.c-check').inner_text()))
+        self.assertEqual(self.page.locator('g.pad[data-n="37"] path.arr').count(), 0)
 
     def test_project_layer_and_routing_card(self):
         self.page.click('.seg button[data-layer="prj"]')
         self.page.click('g.pad[data-n="116"]')
         text = self.page.locator("#panel").inner_text()
-        for s in ("PCIE_RX_P", "PCIe → M.2 NVMe", "PERp0", "Differential pair", "118", "90 Ом"):
+        for s in ("PCIE_RX_P", "PCIe → M.2 NVMe", "PERp0", "Differential pair", "118", "90 Ом", "✗ в схеме нет"):
             self.assertIn(s, text)
         self.assertTrue(self.page.evaluate("document.querySelector('g.pad[data-n=\"118\"]').classList.contains('mate')"))
         rt = self.page.locator("#routing").inner_text()
@@ -102,9 +127,10 @@ class TestPage(unittest.TestCase):
         self.page.click('g.pad[data-n="1"]')
         rt = self.page.locator("#routing").inner_text()
         self.assertIn("Routing notes · pin 1", rt)
-        self.assertEqual(self.page.locator("#routing li").count(), 1)
+        self.assertEqual(self.page.locator("#routing li").count(), self.page.evaluate("ROUTING.groups.GND.length"))
         self.assertIn("GND", rt); self.assertRegex(rt, "[А-Яа-я]")
         self.page.click('.seg button[data-layer="prj"]')   # pin 1 stays selected across the layer switch
+        self.assertIn("✓ совпадает со схемой", self.page.locator("#panel").inner_text())
         self.assertIn("Земля — обоснование не требуется", self.page.locator("#design").inner_text())
         self.page.click('g.pad[data-n="104"]')   # Reserved → device NC
         self.assertIn("Вывод не используется — обоснование не требуется", self.page.locator("#design").inner_text())
@@ -122,8 +148,8 @@ class TestPage(unittest.TestCase):
         self.assertEqual(self.visible_pads(), 200)
         self.page.click('.seg button[data-layer="prj"]')
         self.page.click('#leg .lg[data-k="VDEC"]')
-        self.assertEqual(self.visible_pads(), 4)   # 115/117/127/129; the six unused CSI1 lanes are status nc → "Not used"
-        self.assertIn("4 пина", self.page.locator("#panel h2").inner_text())
+        self.assertEqual(self.visible_pads(), 6)   # 128/130/140/142 used + 134/136 opt (CSI0 D1, external CVBS_Mod only)
+        self.assertIn("6 пинов", self.page.locator("#panel h2").inner_text())
         self.assertGreaterEqual(self.page.locator("#routing li").count(), 1)
 
     def test_filter_clears_selection(self):
@@ -196,15 +222,56 @@ class TestPage(unittest.TestCase):
         self.assertEqual(self.page.locator("#tbl tbody tr.row").count(), 200)
         heads = self.page.locator("#tbl thead th").all_inner_texts()
         self.assertEqual(heads[:5], ["#", "Conn.", "Signal", "Group", "Dir."])
-        self.assertRegex(self.page.locator('#tbl tbody tr.row[data-n="116"] td.txt').last.inner_text(), "[А-Яа-я]")
+        self.assertIn("Схема", heads); self.assertIn("Проверка", heads)
+        self.assertEqual(self.page.locator('#tbl tbody tr.row[data-n="1"] td').nth(1).inner_text(), "CN1")
+        self.assertEqual(self.page.locator('#tbl tbody tr.row[data-n="101"] td').nth(1).inner_text(), "CN2")
         self.page.click('.seg button[data-layer="prj"]')
         self.assertEqual(self.page.locator('#tbl tbody tr.row[data-n="55"] .c-net').inner_text(), "UART0_TXD")
+        self.assertEqual(self.page.locator('#tbl tbody tr.row[data-n="55"] .c-sch').inner_text(), "UART0_TXD")
+        self.assertTrue(self.page.evaluate("document.querySelector('#tbl tbody tr.row[data-n=\"92\"] td.c-check').classList.contains('c-missing')"))
+        self.assertRegex(self.page.locator('#tbl tbody tr.row[data-n="82"] td.c-check').inner_text(), r"^✓ · \d+$")
+        self.assertIn("✗ в схеме нет", self.page.get_attribute('#tbl tbody tr.row[data-n="92"] td.c-check', "title"))
         self.page.click('#tbl tbody tr.row[data-n="92"]')
         self.assertIn("RUN_PG", self.page.locator("#panel h2").inner_text())
         self.page.click("#csv")
         self.page.wait_for_function("document.querySelector('#csv').textContent.includes('Copied') || document.querySelector('#csvdlg').open")
-        text = self.page.evaluate("LIB.csv(DATA.pins, PROJECT)")
-        self.assertTrue(text.startswith("pin;connector;row;signal") and text.split("\n")[0].endswith(";datasheet"))
+        text = self.page.evaluate("LIB.csv(DATA.pins, PROJECT, SCHEMATIC)")
+        self.assertTrue(text.startswith("pin;connector;row;signal") and ";schematic_net;check;issues;" in text.split("\n")[0])
+
+    def test_project_table_fits_1280(self):
+        def th(page, name):
+            return page.locator("#tbl thead th").filter(has_text=re.compile("^" + re.escape(name) + "$"))
+        def width(page):
+            return page.evaluate("(e=>[e.scrollWidth,e.clientWidth])(document.querySelector('.tbl-wrap'))")
+        hidden_in_prj = ("Group", "Dir.", "Pair", "Datasheet")
+        for name in hidden_in_prj:                              # Datasheet layer keeps the datasheet columns
+            self.assertTrue(th(self.page, name).is_visible(), name)
+        self.page.click('.seg button[data-layer="prj"]')
+        for name in hidden_in_prj + ("Mode",):                  # 1280–1599 px: Mode is in the panel's ALT table
+            self.assertFalse(th(self.page, name).is_visible(), name)
+        for name in ("Схема", "Проверка", "Note"):
+            self.assertTrue(th(self.page, name).is_visible(), name)
+        w = width(self.page)
+        self.assertLessEqual(w[0], w[1], f"Project-layer table {w[0]} px in a {w[1]} px wrapper at 1280")
+        page = self.browser.new_page(viewport={"width": 1600, "height": 900})
+        page.on("pageerror", lambda e: self.errors.append(str(e)))
+        page.goto(URL)
+        page.click('.seg button[data-layer="prj"]')
+        self.assertTrue(th(page, "Mode").is_visible())
+        w = width(page)
+        self.assertLessEqual(w[0], w[1], f"Project-layer table {w[0]} px in a {w[1]} px wrapper at 1600")
+        page.close()
+
+    def test_counter_tally(self):
+        self.assertEqual(self.page.locator("#cnt").inner_text(), "Показано 200 из 200 пинов")
+        self.page.click('.seg button[data-layer="prj"]')
+        t = self.page.locator("#cnt").inner_text()
+        self.assertRegex(t, r"^Показано 200 из 200 пинов · ✓ \d+ · ≈ \d+ · ✗ \d+ · — \d+$")
+        nums = [int(x) for x in __import__("re").findall(r"\d+", t)[2:]]
+        self.assertEqual(sum(nums), 200)
+        tally = self.page.evaluate("(()=>{const c={};DATA.pins.forEach(p=>{const k=LIB.checkOf(p,PINOUT.ov(p),SCHEMATIC).code;c[k]=(c[k]||0)+1});return c})()")
+        self.assertEqual(nums[0], tally.get("ok", 0))
+        self.assertEqual(nums[2], tally.get("gnd_open", 0) + tally.get("missing", 0))
 
     def test_mobile(self):
         page = self.browser.new_page(viewport={"width": 400, "height": 800})
