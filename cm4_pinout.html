@@ -35,15 +35,21 @@ h1{margin:0;font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:600;letter-spacing
 @media (min-width:1280px){.main{grid-template-columns:minmax(0,1fr) 340px;align-items:start}}
 .board-wrap{overflow-x:auto}
 #board{display:block;min-width:860px;width:100%;height:auto}
-.pad{cursor:pointer}
+.pad{cursor:pointer;pointer-events:bounding-box}
 .pad rect{stroke:transparent;stroke-width:2;transition:opacity .12s}
-.pad text{font-family:var(--mono);font-size:7px;fill:#fff;text-anchor:middle;pointer-events:none;user-select:none}
-.pad.dim rect,.pad.dim text{opacity:.15}
+.pad .num{font-family:var(--mono);font-size:7px;fill:#fff;text-anchor:middle;pointer-events:none;user-select:none}
+.netlbl{font-family:var(--mono);font-size:11px;fill:var(--fg)}
+.netlbl.empty,.netlbl.gnd{fill:var(--fg2)}
+.arr{fill:var(--bg3);stroke:var(--bd2);stroke-width:1}
+.arr.pwr{stroke-dasharray:2 1.5}
+.badge{fill:#c33}
+.pad.dim rect,.pad.dim .num{opacity:.15}
+.pad.dim .netlbl,.pad.dim .arr,.pad.dim .badge{opacity:.15}
 .pad.mate rect{stroke:var(--sel);stroke-width:2;stroke-dasharray:3 2}
 .pad.dnc rect{stroke:#c33}
 .pad.opt rect{stroke:var(--fg2);stroke-dasharray:2 2}
 .pad.sel rect{stroke:var(--sel);stroke-width:3}
-.lbl{font-family:var(--font);font-size:11px;fill:var(--fg2)}.lbl.b{fill:var(--fg);font-weight:600}.lbl.s{font-size:9px}
+.lbl{font-family:var(--font);font-size:11px;fill:var(--fg2)}.lbl.b{fill:var(--fg);font-weight:600;letter-spacing:-.02em}.lbl.s{font-size:9px}
 #outline{fill:var(--bg2);stroke:var(--bd2);stroke-width:1.5}
 .hole{fill:var(--bg);stroke:var(--bd2)}
 .conn{fill:var(--bg3);stroke:var(--bd2)}
@@ -121,7 +127,7 @@ dialog textarea{width:100%;height:50vh;font-family:var(--mono);font-size:11px}
   <div class="legend" id="leg" role="toolbar" aria-label="Filter"></div>
   <div class="main">
     <div>
-      <div class="board-wrap"><svg id="board" viewBox="0 0 1000 560" role="group" aria-label="Разъёмы CM4, вид сверху"></svg></div>
+      <div class="board-wrap"><svg id="board" viewBox="0 0 1060 1000" role="group" aria-label="Разъёмы CM4, вид сверху"></svg></div>
       <section class="tbl-sec" aria-label="Pin table">
         <div class="tbl-head"><span id="cnt"></span><button type="button" id="csv">Copy CSV</button></div>
         <div class="tbl-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
@@ -272,53 +278,56 @@ var LIB = (function () {
   }
 
   /* ---------- board ---------- */
+  function r3(v) { return Math.round(v * 1000) / 1000; }
+  function at(x, y) { var p = LIB.mm(x, y); return {x: r3(p.x), y: r3(p.y)}; }   // rotated-frame mm → viewBox
   function buildBoard() {
     var defs = svg('defs', {}), pat = svg('pattern', {id: 'hatch', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)'});
     pat.appendChild(svg('line', {x1: 0, y1: 0, x2: 0, y2: 6, stroke: '#8A8A8A', 'stroke-width': 1.2}));
     defs.appendChild(pat); board.appendChild(defs);
 
-    var o = LIB.mm(0, 0), s = LIB.MM;
-    var cL = LIB.mm(14, 0).x, cR = LIB.mm(36, 0).x;
-    var j1 = LIB.mm(0, 3).y, j2 = LIB.mm(0, 37).y;
-    // outline 55×40 mm, corner radius 2 mm
-    board.appendChild(svg('rect', {id: 'outline', x: o.x, y: o.y, width: 55 * s, height: 40 * s, rx: 2 * s}));
+    var s = LIB.MM, o = at(0, 0);
+    // CM4 rotated 90° CCW: 40 × 55 mm, corner radius 2 mm, CN1 on the left, CN2 on the right
+    board.appendChild(svg('rect', {id: 'outline', x: o.x, y: o.y, width: r3(40 * s), height: r3(55 * s), rx: r3(2 * s)}));
     [[3.5, 3.5], [51.5, 3.5], [3.5, 36.5], [51.5, 36.5]].forEach(function (c) {
-      var p = LIB.mm(c[0], c[1]); board.appendChild(svg('circle', {class: 'hole', cx: p.x, cy: p.y, r: 1.25 * s}));
+      var q = LIB.rot(c[0], c[1]), p = at(q.x, q.y);
+      board.appendChild(svg('circle', {class: 'hole', cx: p.x, cy: p.y, r: r3(1.25 * s)}));
     });
-    // connector bodies (22×3 mm, centred x = 25 mm) with pin-1 marks at the right end
-    [['J1', 3], ['J2', 37]].forEach(function (c) {
-      var y = LIB.mm(0, c[1]).y;
-      board.appendChild(svg('rect', {class: 'conn', 'data-conn': c[0], x: cL, y: y - 1.5 * s, width: 22 * s, height: 3 * s, rx: 2}));
-      board.appendChild(svg('circle', {class: 'pin1', cx: cR - 1.2 * s, cy: y, r: 2.2}));
-      board.appendChild(svg('text', {class: 'lbl s', x: cL + 4, y: y + 3.5}, c[0]));
+    // connector bodies 3 × 22 mm (vertical), pin-1 dot at the top end, inset 1.2 mm
+    [['CN1', LIB.rot(25, 3), 1], ['CN2', LIB.rot(25, 37), -1]].forEach(function (c) {
+      var ctr = c[1], tl = at(ctr.x - 1.5, ctr.y - 11), d = at(ctr.x, 55 - 34.8);
+      board.appendChild(svg('rect', {class: 'conn', 'data-conn': c[0], x: tl.x, y: tl.y, width: r3(3 * s), height: r3(22 * s), rx: 2}));
+      board.appendChild(svg('circle', {class: 'pin1', cx: d.x, cy: d.y, r: 2.2}));
+      var t = at(ctr.x + c[2] * 2.2, ctr.y);   // beside the body, towards the SoC
+      board.appendChild(svg('text', {class: 'lbl s', x: t.x, y: r3(t.y + 3), 'text-anchor': c[2] > 0 ? 'start' : 'end'}, c[0]));
     });
-    // BCM2711 15×15 mm centred at (31.99, 23.03)
-    var soc = LIB.mm(31.9875 - 7.5, 23.025 - 7.5);
-    board.appendChild(svg('rect', {class: 'soc', x: soc.x, y: soc.y, width: 15 * s, height: 15 * s, rx: 4}));
-    board.appendChild(svg('text', {class: 'lbl b', x: soc.x + 7.5 * s, y: soc.y + 7.5 * s + 4, 'text-anchor': 'middle'}, 'BCM2711'));
-    // antenna keep-out 6.5×11 mm at the left edge, U.FL at (2.567, 9)
-    var a = LIB.mm(0, 10.5);
-    board.appendChild(svg('rect', {class: 'ant', x: a.x, y: a.y, width: 6.5 * s, height: 11 * s}));
-    var u = LIB.mm(2.567, 9);
-    board.appendChild(svg('circle', {class: 'ufl', cx: u.x, cy: u.y, r: 1.2 * s}));
-    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 11}, 'Зона без меди 6.5 × 11 мм:'));
-    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 23}, 'под этой областью ни на одном'));
-    board.appendChild(svg('text', {class: 'lbl s', x: a.x + 6.5 * s + 6, y: a.y + 35}, 'слое baseboard нет меди; U.FL выше.'));
-    // strip labels and caption
-    [[500, 24, 'middle', 'J1 · пины 1–100 · нечётные номера в верхнем ряду', true],
-     [958, 24, 'end', '1 / 2', false], [60, 24, 'start', '99 / 100', false],
-     [500, 534, 'middle', 'J2 · пины 101–200 · нечётные номера в верхнем ряду', true],
-     [958, 534, 'end', '101 / 102', false], [60, 534, 'start', '199 / 200', false],
-     [500, 552, 'middle', 'CM4, вид сверху, в масштабе (Fig. 4 даташита). Разъёмы на нижней стороне; пин 1 — у правого края каждого разъёма.', false]
+    // BCM2711 15 × 15 mm centred at rot(31.9875, 23.025)
+    var sc = LIB.rot(31.9875, 23.025), soc = at(sc.x - 7.5, sc.y - 7.5), socC = at(sc.x, sc.y);
+    board.appendChild(svg('rect', {class: 'soc', x: soc.x, y: soc.y, width: r3(15 * s), height: r3(15 * s), rx: 4}));
+    board.appendChild(svg('text', {class: 'lbl b', x: socC.x, y: r3(socC.y + 4), 'text-anchor': 'middle'}, 'BCM2711'));
+    // antenna keep-out x′ 10.5…21.5, y′ 48.5…55 mm (bottom edge), U.FL at rot(2.567, 9)
+    var a = at(10.5, 48.5);
+    board.appendChild(svg('rect', {class: 'ant', x: a.x, y: a.y, width: r3(11 * s), height: r3(6.5 * s)}));
+    var uq = LIB.rot(2.567, 9), u = at(uq.x, uq.y);
+    board.appendChild(svg('circle', {class: 'ufl', cx: u.x, cy: u.y, r: r3(1.2 * s)}));
+    ['Зона без меди 6.5 × 11 мм — внизу слева:', 'под этой областью ни на одном слое', 'baseboard нет меди; U.FL рядом с ней.'].forEach(function (t, i) {
+      board.appendChild(svg('text', {class: 'lbl s', x: a.x, y: 760 + 12 * i}, t));
+    });
+    // connector headers, row markers and caption
+    [[162, 30, 'CN1 (J1) · выводы 1–100 · нечётные — внешний ряд', true],
+     [878, 30, 'CN2 (J2) · выводы 101–200 · нечётные — внутренний ряд', true],
+     [162, 50, '1 / 2'], [878, 50, '101 / 102'], [162, 975, '99 / 100'], [878, 975, '199 / 200'],
+     [530, 992, 'CM4, вид сверху, в масштабе, повёрнут на 90° против часовой стрелки: CN1 (J1 даташита) слева, CN2 (J2) справа, выводы 1 и 101 — вверху. Разъёмы на нижней стороне модуля.']
     ].forEach(function (l) {
-      board.appendChild(svg('text', {class: 'lbl' + (l[4] ? ' b' : ''), x: l[0], y: l[1], 'text-anchor': l[2]}, l[3]));
+      board.appendChild(svg('text', {class: 'lbl' + (l[3] ? ' b' : ''), x: l[0], y: l[1], 'text-anchor': 'middle'}, l[2]));
     });
+    // pads: number inside, net label on the side given by LIB.sideOf; arrows and badges come from apply()
     pins.forEach(function (p) {
-      var xy = LIB.padXY(p.n);
+      var xy = LIB.padXY(p.n), left = LIB.sideOf(p.n) === 'L';
       var g = svg('g', {class: 'pad', 'data-n': p.n});
       g.appendChild(svg('title', {}));
       g.appendChild(svg('rect', {x: xy.x, y: xy.y, width: LIB.PAD, height: LIB.PAD, rx: 3}));
-      g.appendChild(svg('text', {x: xy.x + LIB.PAD / 2, y: xy.y + LIB.PAD / 2 + 2.5}, String(p.n)));
+      g.appendChild(svg('text', {class: 'num', x: xy.x + LIB.PAD / 2, y: xy.y + LIB.PAD / 2 + 2.5}, String(p.n)));
+      g.appendChild(svg('text', {class: 'netlbl', x: left ? xy.x - 28 : xy.x + 44, y: xy.y + 12, 'text-anchor': left ? 'end' : 'start'}));
       g.addEventListener('click', function () { select(p.n); });
       board.appendChild(g);
       pads[p.n] = g;
@@ -523,15 +532,31 @@ var LIB = (function () {
     pins.forEach(function (p) {
       var o = ov(p), v = visible(p);
       if (v) shown++;
-      var g = pads[p.n], cls = 'pad';
+      var g = pads[p.n], cls = 'pad', xy = LIB.padXY(p.n);
       if (!v) cls += ' dim';
       if (p.n === state.sel) cls += ' sel';
       if (p.n === mate) cls += ' mate';
       if (state.layer === 'prj' && o.status === 'dnc') cls += ' dnc';
       if (state.layer === 'prj' && o.status === 'opt') cls += ' opt';
-      g.setAttribute('class', cls);
       g.querySelector('rect').setAttribute('fill', LIB.colorOf(p, o, state.layer, PROJECT));
-      var label = p.n + ' · ' + p.sig + (state.layer === 'prj' && o.net ? ' · ' + o.net : '');
+      // net label, then the direction glyph and the issue badge: present in the DOM only when they apply
+      var t = state.layer === 'prj' ? (o.net || '—') : p.sig, nl = g.querySelector('.netlbl');
+      nl.textContent = t;
+      nl.setAttribute('class', 'netlbl' + (t === '—' ? ' empty' : '') + (p.grp === 'GND' ? ' gnd' : ''));
+      g.querySelectorAll('path.arr, path.badge').forEach(function (e) { e.remove(); });
+      var d = LIB.dirOf(p, o, state.layer);
+      if (LIB.ARROW[d]) {
+        var kind = d === 'power_in' ? 'pwr in' : d === 'power_out' ? 'pwr out' : d;
+        g.appendChild(svg('path', {class: 'arr ' + kind, d: LIB.ARROW[d],
+          transform: LIB.sideOf(p.n) === 'L' ? 'translate(' + (xy.x - 24) + ', ' + (xy.y + 3) + ')'
+                                             : 'translate(' + (xy.x + 40) + ', ' + (xy.y + 3) + ') scale(-1,1)'}));
+      }
+      if (state.layer === 'prj' && LIB.hasIssue(p, o, LIB.checkOf(p, o, SCHEMATIC))) {
+        g.appendChild(svg('path', {class: 'badge', d: 'M' + (xy.x + 10) + ' ' + xy.y + ' h6 v6 Z'}));
+        cls += ' warn';
+      }
+      g.setAttribute('class', cls);
+      var label = p.n + ' · ' + LIB.connOf(p) + ' · ' + p.sig + (state.layer === 'prj' && o.net ? ' · ' + o.net : '');
       g.querySelector('title').textContent = label;
       g.setAttribute('aria-label', 'Пин ' + label);
       var r = rows[p.n];
